@@ -1,2 +1,3 @@
-# SeleSt
-Open-source software to assess selective stopping with stop-signal and anticipatory response inhibition paradigms.
+# Selective Stopping (SeleSt) software
+
+Open-source software to assess selective stopping via multi-component stop-signal and anticipatory response inhibition paradigms.
