@@ -4,6 +4,7 @@ Selective Stopping (SeleSt) task
         *Movement Neuroscience Laboratory, Department of Exercise Sciences, The University of Auckland
     
     Further information can be found at:
+        https://github.com/coreywadsley/SeleSt
     
     If you use this task, please cite:
         Wadsley, Cirillo, Nieuwenhuys, & Byblow. (2022). Stopping interference in response inhibition: Behavioral
@@ -32,7 +33,7 @@ stopInfo = SeleSt_initialize.SSD(exp) # initialize stopInfo class
 
 #   RUN
 # Here we are running the task by looping over blocks and trials
-    # additional info for each each function can be found in the SeleSt_run script
+    # additional info for each function can be found in the SeleSt_run script
 for thisBlock in trialInfo.blockList: # iterate over blocks
     thisBlockTrials = SeleSt_run.Block(exp, trialInfo) # process trials in the current block
     for trial in thisBlockTrials: # iterate over trials in the current block
@@ -42,7 +43,7 @@ for thisBlock in trialInfo.blockList: # iterate over blocks
         trialStimuli = SeleSt_run.Start_Trial(exp,stimuli,thisTrial) # set additional trial related parameters
         exp.win.flip() # draw stimuli at start of trial
         fixPeriod = SeleSt_run.fixationPeriod(exp) # run fixation period
-        if exp.advSettings['Hold-and-release'] == False: # clear events in buffer if wait-and-press version
+        if exp.taskInfo['Response mode'] == 'Wait-and-press': # clear events in buffer if wait-and-press version
             exp.rb.clearEvents()
         exp.rb.clock.reset() # reset keyboard and trial clock
         exp.trialClock.reset()
@@ -62,14 +63,4 @@ for thisBlock in trialInfo.blockList: # iterate over blocks
         SeleSt_run.ITI(exp) # run intertrial interval
         SeleSt_run.endTrial(exp,stimuli) # remove stimuli from screen
     SeleSt_run.endBlock(exp, trialInfo, thisBlockTrials) # calculate block score and present end-of-block feedback
-
-# Close window, serial ports etc. at the end of the experiment
-if exp.advSettings['Send serial trigger at trial onset?'] == True:
-    # E.g.
-    #ser.close()
-    pass
-if exp.genSettings['Use response box?'] == True:
-    # E.g.
-    #rb.close()   
-    pass                                   
-exp.win.close()
+SeleSt_run.endTask(exp) # end the task when all blocks have been completed
