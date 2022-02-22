@@ -28,8 +28,8 @@ class Experiment():
             'Experiment name': 'x', # name of experiment (included in filename)
             'Participant ID': 0, # ID of participant (included in filename)
             'Age (years)': 0, # age of participant
-            'Sex': ['-','F','M','Prefer not to say'], # sex of participant
-            'Handedness': ['Right-handed','Left-handed','Ambidextrous'], # handedness of participant
+            'Sex': ['-','F','M', 'Non-binary', 'Prefer not to say'], # sex of participant
+            'Handedness': ['Right-handed','Left-handed','Mixed-handed'], # handedness of participant
             'Paradigm': ['ARI','SST'], # use anticipatory response inhibition (ARI) or stop-signal task (SST) paradigm (NOTE: default option can be changed by switching order of array)
             'Response mode': ['Wait-and-press','Hold-and-release'], # option to run task in wait-and-press (trials start automatically) or hold-and-release (trials self-initiated by holding response keys) modes
             'Include practice?': True, # include instructions and practice go-only & go/stop block
@@ -63,8 +63,8 @@ class Experiment():
             'n stop-left trials per block': 4,
             'n stop-right trials per block': 4,
             'n blocks': 12, # number of blocks to repeat the above trial arrangement over
-            'n forced go trials': 3, # number of go trials to force at the start of every block
-            'Staircase stop-signal delays?': True, 
+            'n forced go trials': 3, # number of go trials to force at the start of each block
+            'Staircase stop-signal delays?': True, # option to use staircased SSDs, SSDs will be fixed if not selected
             'Stop-signal delay step-size (ms)': 50, # step size to change stop-signal delay by if staircasing is enabled
             'Change advanced settings?':False} # option to change advanced settings via GUI              
         if self.taskInfo['Change general settings?']:
@@ -94,17 +94,17 @@ class Experiment():
             'Right response key': 'm', # response key for right stimulus
             'Target time (ms)': Defaults['Target time (ms)'], # ARI ONLY: target time for responses
             'Trial length (s)': Defaults['Trial length (s)'], # Length of trial
-            'Intertrial interval (s)': 1.5,
+            'Intertrial interval (s)': 1.5, # Length of intertrial interval
             'Fixed rise delay?': False, # option to use fixed rise delay, if false, random uniform delay is used (ARI: 0.5 - 1 s, SST: 1 -2 s)
             'Fixed delay length (s)': Defaults['Fixed delay length (s)'], # length of fixed rise delay if option is enabled
-            'Stop-both time (ms)': Defaults['Stop-both time (ms)'],
+            'Stop-both time (ms)': Defaults['Stop-both time (ms)'], # starting SSD for stop-both trials
             'Stop-left time (ms)': Defaults['Stop-left time (ms)'],
             'Stop-right time (ms)': Defaults['Stop-right time (ms)'],
-            'Lower stop-limit (ms)': Defaults['Lower stop-limit (ms)'],
-            'Upper stop-limit (ms)': Defaults['Upper stop-limit (ms)'],
-            'Positional stop signal': Defaults['Positional stop signal'], # option 
+            'Lower stop-limit (ms)': Defaults['Lower stop-limit (ms)'], # time relative to trial onset that the bars should not stop before'
+            'Upper stop-limit (ms)': Defaults['Upper stop-limit (ms)'], # time relative to target time that the bars should not stop after (e.g. 800 ms target, 150 ms upper stop-limit = 650 ms stopping limit)
+            'Positional stop signal': Defaults['Positional stop signal'], # ARI ONLY: option to use positional stop-signal (cessation of bar rising)
             'Stimulus size (cm)': Defaults['Stimulus size (cm)'], # size of the left and right stimuli (ARI = height of bars, SST = height of triangles)
-            'Target position': Defaults['Target position'], # ARI only: position of target lines as proportion of total bar height
+            'Target position': Defaults['Target position'], # ARI ONLY: position of target lines as proportion of total bar height
             'Cue color': 'black', # colour of cues (ARI = target lines, SST = outline of triangle)
             'Go color': 'black', # colour of go signal (ARI = filling bar, SST = filling of triangle)
             'Stop color': 'cyan', # colour of stop signal (same as above)
@@ -127,7 +127,7 @@ class Experiment():
                      'Target position': 'ARI ONLY: Input where you would like the target lines to be positioned as proportion of total bar height (e.g. 0.8 equates to 80% of bar height/filling time)',
                      'Cue color': 'Input name of desired color of the cue (ARI = target lines, SST = triangle outline)',
                      'Go color': 'Input name of desired color of the go signal (ARI = filling bar, SST = triangle filling)',
-                     'Stop color': 'Input name of desired color of the stop signal (ARI = bar filling, SST = triangle filling)',
+                     'Stop color': 'Input name of desired color of the stop signal (ARI = filling bar, SST = triangle filling)',
                      'Background color': 'Input name of desired color of the background (for list of possible colors see https://www.w3schools.com/Colors/colors_names.asp )'})
         if dlg.OK==False: core.quit()
         
@@ -139,7 +139,9 @@ class Experiment():
             color=self.advSettings['Background color'],
             blendMode='avg',
             allowGUI=False,
-            units = 'cm')
+            units = 'cm',
+            size = [1200, 1200],
+            screen = 0)
         
         # Measure the monitors refresh rate
         self.taskInfo['frameRate'] = self.win.getActualFrameRate()
@@ -185,7 +187,7 @@ class Experiment():
             os.makedirs(_thisDir + os.sep +'data/')
         if self.taskInfo['Save data?'] == True: # only save if option is selected
             self.Output = _thisDir + os.sep + u'data/SeleSt_%s_%s_%s' % (self.taskInfo['Participant ID'],
-                self.taskInfo['Experiment name'], self.taskInfo['date']) # create output file to store behavioural data.
+                self.taskInfo['Experiment name'], self.taskInfo['date']) # create output file to store behavioural data
             with open(self.Output+'.txt', 'a') as b: # create file w/ headers
                 b.write('block trial startTime trialName trialType stopTime L_press R_press L_targetTime R_targetTime L_RT R_RT\n')
             taskInfo_output = _thisDir + os.sep + u'data/SeleSt_%s_%s_%s_taskInfo.txt' % (self.taskInfo['Participant ID'],
@@ -228,28 +230,27 @@ class Stimuli:
         # Create stimuli for ARI
         elif exp.taskInfo['Paradigm'] == 'ARI':
             # Do some calculations for size of bars and target lines
-            barWidth = 1.5
-            barTop = exp.advSettings['Stimulus size (cm)']/2
-            vert1Width = 0-(barWidth/2)
-            vert2Width = (barWidth/2)
-            self.L_emptyVert = [(vert1Width+-1.5,0-barTop), (vert1Width+-1.5,0-barTop+.01), 
-                    (vert2Width+-1.5,0-barTop+.01), (vert2Width+-1.5,0-barTop)]
-            self.L_fullVert = [(vert1Width+-1.5,0-barTop),(vert1Width+-1.5,barTop),
-                    (vert2Width+-1.5,barTop),(vert2Width+-1.5,0-barTop)]
-            self.R_emptyVert = [(vert1Width+3,0-barTop), (vert1Width+3,0-barTop+.01), 
-                    (vert2Width+0,0-barTop+.01), (vert2Width+0,0-barTop)]
-            self.R_fullVert = [(vert1Width+3,0-barTop),(vert1Width+3,barTop),
-                    (vert2Width+0,barTop),(vert2Width+0,0-barTop)]
-            self.L_emptyStim = visual.ShapeStim(exp.win, vertices=self.L_fullVert, fillColor='white', lineWidth=0, opacity=1, units='cm')
-            self.R_emptyStim = visual.ShapeStim(exp.win, vertices=self.R_fullVert, fillColor='white', lineWidth=0, opacity=1, units='cm')
-            self.barTop = barTop  
-            TargetLineWidth = 5.5
+            barWidth = 1.5 # width of each bar in cm
+            self.barTop = exp.advSettings['Stimulus size (cm)']/2 # location of top of the bar
+            vert1Width = 0-(barWidth/2) # location of left side of bar
+            vert2Width = (barWidth/2) # location of right side of bar
+            self.L_emptyVert = [(vert1Width+-1.5,0-self.barTop), (vert1Width+-1.5,0-self.barTop+.01), 
+                    (vert2Width+-1.5,0-self.barTop+.01), (vert2Width+-1.5,0-self.barTop)] # vertices of empty L bar
+            self.L_fullVert = [(vert1Width+-1.5,0-self.barTop),(vert1Width+-1.5,self.barTop),
+                    (vert2Width+-1.5,self.barTop),(vert2Width+-1.5,0-self.barTop)] # vertices of full L bar
+            self.R_emptyVert = [(vert1Width+3,0-self.barTop), (vert1Width+3,0-self.barTop+.01), 
+                    (vert2Width+0,0-self.barTop+.01), (vert2Width+0,0-self.barTop)] # vertices of empty R bar
+            self.R_fullVert = [(vert1Width+3,0-self.barTop),(vert1Width+3,self.barTop),
+                    (vert2Width+0,self.barTop),(vert2Width+0,0-self.barTop)] # vertices of full R bar
+            self.L_emptyStim = visual.ShapeStim(exp.win, vertices=self.L_fullVert, fillColor='white', lineWidth=0, opacity=1, units='cm') # create empty L bar
+            self.R_emptyStim = visual.ShapeStim(exp.win, vertices=self.R_fullVert, fillColor='white', lineWidth=0, opacity=1, units='cm') # create empty R bar
+            TargetLineWidth = 5.5 # width of target lines
             TargetPos = (exp.advSettings['Target position']*exp.advSettings['Stimulus size (cm)'])-exp.advSettings['Stimulus size (cm)']/2 # set target to target position                       
             # Create stimuli (filling bars and target lines)
-            self.L_cue = visual.Line(exp.win, lineColor = exp.advSettings['Cue color'], start=[0-(TargetLineWidth/2),TargetPos],end=[TargetLineWidth/2-3,TargetPos], lineWidth=10)
-            self.L_stim = visual.ShapeStim(exp.win, fillColor=exp.advSettings['Go color'], lineWidth=0, opacity=1, units='cm', vertices=self.L_emptyVert)
-            self.R_cue = visual.Line(exp.win, lineColor = exp.advSettings['Cue color'], start=[0-(TargetLineWidth/2)+3,TargetPos],end=[TargetLineWidth/2,TargetPos], lineWidth=10)
-            self.R_stim = visual.ShapeStim(exp.win, fillColor=exp.advSettings['Go color'], lineWidth=0, opacity=1, units='cm', vertices=self.R_emptyVert)
+            self.L_cue = visual.Line(exp.win, lineColor = exp.advSettings['Cue color'], start=[0-(TargetLineWidth/2),TargetPos],end=[TargetLineWidth/2-3,TargetPos], lineWidth=10) # L target line
+            self.L_stim = visual.ShapeStim(exp.win, fillColor=exp.advSettings['Go color'], lineWidth=0, opacity=1, units='cm', vertices=self.L_emptyVert) # L filling bar
+            self.R_cue = visual.Line(exp.win, lineColor = exp.advSettings['Cue color'], start=[0-(TargetLineWidth/2)+3,TargetPos],end=[TargetLineWidth/2,TargetPos], lineWidth=10) # R target line
+            self.R_stim = visual.ShapeStim(exp.win, fillColor=exp.advSettings['Go color'], lineWidth=0, opacity=1, units='cm', vertices=self.R_emptyVert) # R filling bar
 
 # Create Trials class
 #   Generates trials that will be presented during the task based on settings or imported file, and
@@ -265,7 +266,7 @@ class Trials:
             nStopLeftTrials = [3] * exp.genSettings['n stop-left trials per block']
             nStopRightTrials = [4] * exp.genSettings['n stop-right trials per block']
             self.trialList = nGoTrials + nStopBothTrials + nStopLeftTrials + nStopRightTrials
-
+        # Insert practice routine if option is selected
         if exp.taskInfo['Include practice?'] == True:
             exp.genSettings['n blocks'] = exp.genSettings['n blocks'] + 2 # add an additional block if practice trials have been selected
         self.blockList = [1] * exp.genSettings['n blocks'] # create list of blocks (NOTE: this can be used in the future to set block types)
@@ -278,9 +279,9 @@ class Trials:
         self.blockScore = 0
         self.prevBlockScore = '-'
         self.trialScore = 0         
-        self.lowScore = 10
-        self.midScore = 20
-        self.highScore = 30
+        self.lowScore = 25
+        self.midScore = 50
+        self.highScore = 100
         # Set target RTs
         if exp.taskInfo['Paradigm'] == 'ARI':
             self.lowTarget = 75
@@ -291,13 +292,13 @@ class Trials:
             self.midTarget = 400
             self.highTarget = 300            
 
-        # Create arrays of len('n blocks') for use in plotting block data for feedback
-        BlockCountArray = np.array([])
-        for i in range(1,exp.genSettings['n blocks']+1):
-            self.BlockCountArray = np.append(BlockCountArray, [i], axis = 0)    
-        BlockScoreArray = np.array([])
-        for i in range(1,exp.genSettings['n blocks']+1):
-            self.BlockScoreArray = np.append(BlockScoreArray, [0], axis = 0)
+        # # Create arrays of len('n blocks') for use in plotting block data for feedback
+        # BlockCountArray = np.array([])
+        # for i in range(1,exp.genSettings['n blocks']+1):
+        #     self.BlockCountArray = np.append(BlockCountArray, [i], axis = 0)    
+        # BlockScoreArray = np.array([])
+        # for i in range(1,exp.genSettings['n blocks']+1):
+        #     self.BlockScoreArray = np.append(BlockScoreArray, [0], axis = 0)
  
 # Create SSD class
 #   Generates information for stop trials based on selected settings
@@ -384,8 +385,8 @@ class Experiment_debug():
             Defaults = {'Target time (ms)': 300, 'Trial length (s)': 1.5, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 300, 'Stop-left time (ms)': 250, 'Stop-right time (ms)': 250, 'Lower stop-limit (ms)': 150, 'Upper stop-limit (ms)': 50, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
         self.advSettings = {
             'Send serial trigger at trial onset?': False, # option to send serial trigger at trial onset (NOTE: a compatible serial device will need to be set up before this works)
-            'Left response key': 'n', # response key for left stimulus
-            'Right response key': 'm', # response key for right stimulus
+            'Left response key': 'left', # response key for left stimulus
+            'Right response key': 'right', # response key for right stimulus
             'Target time (ms)': Defaults['Target time (ms)'], # ARI ONLY: target time for responses
             'Trial length (s)': Defaults['Trial length (s)'], # Length of trial
             'Intertrial interval (s)': 1.5,
@@ -434,7 +435,8 @@ class Experiment_debug():
             blendMode='avg',
             allowGUI=False,
             units = 'cm',
-            size = [1200, 1200])
+            size = [1200, 1200],
+            screen=1)
         
         # Measure the monitors refresh rate
         self.taskInfo['frameRate'] = self.win.getActualFrameRate()

@@ -245,6 +245,7 @@ def runTrial(exp,stimuli,thisTrial,trialStimuli):
                  trialStimuli.L_increase = 0 # stop L bar rising
                  thisTrial.L_press = 1 # L key was pressed
              elif thisKey==exp.R_resp_key: # right response
+                 #print(exp.rb.clock.getTime())
                  thisTrial.R_RT_array_time.append(thisKey.rt)
                  thisTrial.R_RT_array_pos.append((stimuli.R_emptyVert[1][1]+stimuli.barTop)/exp.advSettings['Stimulus size (cm)']*trialStimuli.R_fillTime/1000)
                  thisTrial.R_duration = thisKey.duration
@@ -322,6 +323,9 @@ def getRT(exp,thisTrial):
             thisTrial.R_RT_time = round(thisTrial.R_RT_array_time[0] * 1000,1)                
     print('Left RT was %s ms'%round(thisTrial.L_RT_time,1)) # print left and right RTs to console
     print('Right RT was %s ms'%round(thisTrial.R_RT_time,1))
+    
+    print(thisTrial.L_RT_pos-thisTrial.L_RT_time)
+    #print(thisTrial.R_RT_pos-thisTrial.R_RT_time)
 
 # Define feedback function
 #   Function for presenting feedback at end of a trial
