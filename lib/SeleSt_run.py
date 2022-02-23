@@ -23,40 +23,40 @@ def Block(exp,trialInfo):
     # Shuffle trials on a block-by-block basis
     if exp.taskInfo['Import trials?'] == False: # don't shuffle trials if they have been imported
         shuffleTrials = True
-        while shuffleTrials == True:
+        while shuffleTrials == True: # shuffle until go criterion is achieved
             thisBlockTrials = trialInfo.trialList
             shuffle(thisBlockTrials)
             if sum(thisBlockTrials[:exp.genSettings['n forced go trials']]) > exp.genSettings['n forced go trials']: # reshuffle trials if n forced go criterion is not met
                 thisBlockTrials = shuffle(thisBlockTrials)
             elif sum(thisBlockTrials[:exp.genSettings['n forced go trials']]) <= exp.genSettings['n forced go trials']: # break loop if n forced go criterion is achieved
                 break    
-    elif exp.taskInfo['Import trials?'] == True:
+    elif exp.taskInfo['Import trials?'] == True: # use imported trials if option is selected
         thisBlockTrials = trialInfo.blockTrials[trialInfo.blockCount] # start from 0 to account for zero-based array index
-                
+    # Add instructions for practice go-only and go/stop blocks if practice is enabled            
     if exp.taskInfo['Include practice?'] == True:
-        if exp.practiceGo == True:
+        if exp.practiceGo == True: # practice go (coded as block -1 in data file)
             thisBlockTrials = exp.genSettings['n practice go trials'] * [1]
-            exp.instr_1_go.draw()
+            exp.instr_1_go.draw() # draw 1st instruction
             exp.win.flip()
-            exp.rb.waitKeys()
-            exp.instr_2_points.draw()
+            exp.rb.waitKeys(keyList=['space'])
+            exp.instr_2_points.draw() # draw 2nd instruction
             exp.win.flip()
-            exp.rb.waitKeys()
+            exp.rb.waitKeys(keyList=['space'])
             trialInfo.blockCount = -2
-        if exp.practiceStop == True and exp.practiceGo == False:
-            exp.instr_3_stop.draw()
+        if exp.practiceStop == True and exp.practiceGo == False: # practice go/stop (coded as block 0 in data file)
+            exp.instr_3_stop.draw() # draw 3rd instruction
             exp.win.flip()
-            exp.rb.waitKeys()
-            exp.practiceStop = False
-        if exp.practiceStop == False and exp.practiceGo == False and trialInfo.blockCount == 0:
+            exp.rb.waitKeys(keyList=['space'])
+            exp.practiceStop = False # go/stop practice is complete
+        if exp.practiceStop == False and exp.practiceGo == False and trialInfo.blockCount == 0: # start experimental blocks
             exp.instr_4_task.draw()
             exp.win.flip()
-            exp.rb.waitKeys()
-    exp.practiceGo = False
+            exp.rb.waitKeys(keyList=['space'])
+    exp.practiceGo = False # go-only practice is complete
     trialInfo.blockCount = trialInfo.blockCount + 1 # track block number
     print('Starting block %s'%(trialInfo.blockCount)) # print block number to console
     
-    return thisBlockTrials
+    return thisBlockTrials # return list of trials for current block
 
 # Define Initialize_trial function
 #   Here information for the given trial is obtained and counters are reset
@@ -82,36 +82,29 @@ class Initialize_trial:
             if self.trialType == 4: # if stop-right
                 self.staircase = 3
                 self.trialName = 'Stop-right'
-        self.stopTime = stopInfo.stopTimeArray[self.staircase] # assign stoptime based on staircase
-        self.stopSuccess = 0
-        
+        self.stopTime = stopInfo.stopTimeArray[self.staircase] # assign stoptime based on staircase                
         # Reset dynamic parameters
-        self.L_RT_array_pos = []
-        self.L_RT_pos = 0
         self.L_RT_array_time = []
         self.L_RT_time = 0
         self.L_duration = 0
         self.L_RT = 0
         self.L_press = 0
-        self.R_RT_array_pos = []
-        self.R_RT_pos = 0
+        self.L_draw = True
         self.R_RT_array_time = []
         self.R_RT_time = 0
         self.R_duration = 0
         self.R_RT = 0
         self.R_press = 0
+        self.R_draw = True
+        self.stopSuccess = 0
         
-        # Set target RT for SST (Note: these will be updated for ARI)
-        self.L_targetTime = 300
-        self.R_targetTime = 300
-
 # Define Start_trial function
 #   Here the parameters for the current trial are implemented
 class Start_Trial:
     def __init__(self,exp,stimuli,thisTrial):
         if exp.taskInfo['Import trials?'] == True: # use imported trial information if selected
-            stimuli.L_cue.lineColor = thisTrial['L_cue_color']
-            stimuli.R_cue.lineColor = thisTrial['R_cue_color']
+            stimuli.L_cue.lineColor = thisTrial['Cue_color']
+            stimuli.R_cue.lineColor = thisTrial['Cue_color']
             thisTrial.L_targetTime = thisTrial['L_targetTime']
             thisTrial.R_targetTime = thisTrial['R_targetTime']
         else: # use GUI if not importing trials
@@ -119,15 +112,12 @@ class Start_Trial:
             stimuli.R_cue.lineColor = exp.advSettings['Cue color']
             thisTrial.L_targetTime = exp.advSettings['Target time (ms)']
             thisTrial.R_targetTime = exp.advSettings['Target time (ms)']          
-                
+        # Start ARI trial        
         if exp.taskInfo['Paradigm'] == 'ARI':
-            # Calculate rise velocity (cm/ms) based on target time for current trial
-            self.L_fillTime = thisTrial.L_targetTime / exp.advSettings['Target position'] # left bar
-            L_riseVelocity = (exp.advSettings['Stimulus size (cm)'] / self.L_fillTime) * 1000 # convert to ms
-            self.L_increase = L_riseVelocity/exp.frameRate
-            self.R_fillTime = thisTrial.R_targetTime / exp.advSettings['Target position'] # right bar
-            R_riseVelocity = (exp.advSettings['Stimulus size (cm)'] / self.R_fillTime) * 1000 # convert to ms
-            self.R_increase = R_riseVelocity/exp.frameRate       
+            self.L_fillTime = thisTrial.L_targetTime / exp.advSettings['Target position'] # left bar fill time
+            self.L_increase = 0 # initial height of L bar
+            self.R_fillTime = thisTrial.R_targetTime / exp.advSettings['Target position'] # right bar fill time
+            self.R_increase = 0 # initial height of R bar
             # Calculate fill limits if using positional stop signal
             if exp.advSettings['Positional stop signal'] == True:
                 if thisTrial.trialType == 1: # if go trial
@@ -148,7 +138,7 @@ class Start_Trial:
                     stopRightPos = exp.advSettings['Stimulus size (cm)'] * stopRightRatio - stimuli.barTop # calculate position of stopped bar relative to empty bar height and position
                     self.L_fillLimit = stimuli.L_fullVert[1][1]
                     self.R_fillLimit = stopRightPos  
-            else:
+            else: # always fill bars if not using a positional stop signal
                 self.L_fillLimit = stimuli.L_fullVert[1][1]
                 self.R_fillLimit = stimuli.R_fullVert[1][1]                
                 
@@ -161,14 +151,13 @@ class Start_Trial:
             stimuli.R_stim.vertices = stimuli.R_emptyVert    
             stimuli.L_stim.fillColor = 'black'
             stimuli.R_stim.fillColor = 'black'                
-
             # Draw the stimuli
             stimuli.L_cue.setAutoDraw(True)
             stimuli.L_emptyStim.setAutoDraw(True)
             stimuli.R_cue.setAutoDraw(True)
             stimuli.R_emptyStim.setAutoDraw(True)
             
-        if exp.taskInfo['Paradigm'] == 'SST': # reset dynamic SST parameters
+        if exp.taskInfo['Paradigm'] == 'SST': # reset and draw SST parameters
             stimuli.L_stim.fillColor = 'white'
             stimuli.R_stim.fillColor = 'white'
             stimuli.L_stim.setAutoDraw(True)
@@ -221,10 +210,8 @@ def fixationPeriod(exp):
         pass
         
     return fixPeriod
-    
-# Define runTrial function
-#   Function for running each trial
-def runTrial(exp,stimuli,thisTrial,trialStimuli):
+                                    
+def runTrial(exp,stimuli,thisTrial,trialStimuli,trialTimer):
     # Set up keys to track for left and right responses based on task version (hold-and-release vs wait-and-press)
     if exp.taskInfo['Response mode'] == 'Hold-and-release' and exp.genSettings['Use response box?'] == False: 
         allKeys = exp.rb.getKeys([exp.advSettings['Left response key'],exp.advSettings['Right response key'],'q','escape'], waitRelease = True)
@@ -234,58 +221,48 @@ def runTrial(exp,stimuli,thisTrial,trialStimuli):
         pass
     else:
         allKeys = exp.rb.getKeys([exp.advSettings['Left response key'],exp.advSettings['Right response key'],'q','escape'], waitRelease = False) #Uses keyboard with key press
+    # Monitor key presses during trial
+    for thisKey in allKeys:
+         if thisKey==exp.L_resp_key: # left response
+             thisTrial.L_RT_array_time.append(thisKey.rt) # store time-based RT
+             thisTrial.L_duration = thisKey.duration # store duration for hold-and-release version
+             thisTrial.L_draw = False # stop drawing the L stimulus
+             thisTrial.L_press = 1 # L key was pressed
+         elif thisKey==exp.R_resp_key: # right response
+             thisTrial.R_RT_array_time.append(thisKey.rt)
+             thisTrial.R_duration = thisKey.duration
+             thisTrial.R_draw = False
+             thisTrial.R_press = 1
+         elif thisKey in ['q', 'escape']: # monitor for esc or q press
+             exp.win.close()
+             #ser.close()
+    if exp.taskInfo['Paradigm'] == 'ARI': # draw filling bars for ARI paradigm                 
+        if thisTrial.L_draw == True: # if L bar should still increase
+            stimuli.L_emptyVert[1]=(stimuli.L_emptyVert[1][0], stimuli.L_emptyVert[1][1]-trialStimuli.L_increase) # reset top left and top right vertices
+            stimuli.L_emptyVert[2]=(stimuli.L_emptyVert[2][0], stimuli.L_emptyVert[2][1]-trialStimuli.L_increase)
+            trialStimuli.L_increase = ((exp.advSettings['Trial length (s)']-trialTimer.getTime())*exp.advSettings['Stimulus size (cm)']/(trialStimuli.L_fillTime/1000)) # calculate current height of the bar
+            stimuli.L_emptyVert[1]=(stimuli.L_emptyVert[1][0], stimuli.L_emptyVert[1][1]+trialStimuli.L_increase) # assign height to top left and top right vertices
+            stimuli.L_emptyVert[2]=(stimuli.L_emptyVert[2][0], stimuli.L_emptyVert[2][1]+trialStimuli.L_increase)
+            stimuli.L_stim.vertices = stimuli.L_emptyVert # assign vertices to L stim
+            if stimuli.L_emptyVert[1][1]>trialStimuli.L_fillLimit: # stop drawing L bar when it is at its limit
+                 stimuli.L_stim.vertices = stimuli.L_fullVert
+            stimuli.L_stim.setAutoDraw(True) # draw
+        if thisTrial.R_draw == True: # repeat above for the R bar
+            stimuli.R_emptyVert[1]=(stimuli.R_emptyVert[1][0], stimuli.R_emptyVert[1][1]-trialStimuli.R_increase)
+            stimuli.R_emptyVert[2]=(stimuli.R_emptyVert[2][0], stimuli.R_emptyVert[2][1]-trialStimuli.R_increase)
+            trialStimuli.R_increase = ((exp.advSettings['Trial length (s)']-trialTimer.getTime())*exp.advSettings['Stimulus size (cm)']/(trialStimuli.R_fillTime/1000))
+            stimuli.R_emptyVert[1]=(stimuli.R_emptyVert[1][0], stimuli.R_emptyVert[1][1]+trialStimuli.R_increase)
+            stimuli.R_emptyVert[2]=(stimuli.R_emptyVert[2][0], stimuli.R_emptyVert[2][1]+trialStimuli.R_increase)
+            stimuli.R_stim.vertices = stimuli.R_emptyVert
+            if stimuli.R_emptyVert[1][1]>trialStimuli.R_fillLimit: # stop drawing L bar when it is at its limit
+                 stimuli.R_stim.vertices = stimuli.R_fullVert
+            stimuli.R_stim.setAutoDraw(True)
 
-    if exp.taskInfo['Paradigm'] == 'ARI':
-        for thisKey in allKeys:
-             if thisKey==exp.L_resp_key: # left response
-                 print(exp.rb.clock.getTime())
-                 thisTrial.L_RT_array_time.append(thisKey.rt) # store time-based RT
-                 thisTrial.L_RT_array_pos.append((stimuli.L_emptyVert[1][1]+stimuli.barTop)/exp.advSettings['Stimulus size (cm)']*trialStimuli.L_fillTime/1000) # store position-based RT
-                 thisTrial.L_duration = thisKey.duration # store duration for hold-and-release version
-                 trialStimuli.L_increase = 0 # stop L bar rising
-                 thisTrial.L_press = 1 # L key was pressed
-             elif thisKey==exp.R_resp_key: # right response
-                 #print(exp.rb.clock.getTime())
-                 thisTrial.R_RT_array_time.append(thisKey.rt)
-                 thisTrial.R_RT_array_pos.append((stimuli.R_emptyVert[1][1]+stimuli.barTop)/exp.advSettings['Stimulus size (cm)']*trialStimuli.R_fillTime/1000)
-                 thisTrial.R_duration = thisKey.duration
-                 trialStimuli.R_increase = 0 # stop R bar rising
-                 thisTrial.R_press = 1
-             elif thisKey in ['q', 'escape']:
-                 exp.win.close()
-                 #ser.close()
-        if stimuli.L_emptyVert[1][1]>trialStimuli.L_fillLimit: # stop drawing L bar when it is at its limit
-             trialStimuli.L_increase = 0
-        if stimuli.R_emptyVert[1][1]>trialStimuli.R_fillLimit: # stop drawing R bar when it is at its limit
-            trialStimuli.R_increase = 0
-        # Update stimuli information (i.e. bar height) on every frame
-        stimuli.L_stim.setAutoDraw(True)
-        stimuli.L_emptyVert[1]=(stimuli.L_emptyVert[1][0], stimuli.L_emptyVert[1][1]+trialStimuli.L_increase)
-        stimuli.L_emptyVert[2]=(stimuli.L_emptyVert[2][0], stimuli.L_emptyVert[2][1]+trialStimuli.L_increase)
-        stimuli.R_stim.setAutoDraw(True)
-        stimuli.R_emptyVert[1]=(stimuli.R_emptyVert[1][0], stimuli.R_emptyVert[1][1]+trialStimuli.R_increase)
-        stimuli.R_emptyVert[2]=(stimuli.R_emptyVert[2][0], stimuli.R_emptyVert[2][1]+trialStimuli.R_increase)
-        stimuli.L_stim.vertices = stimuli.L_emptyVert
-        stimuli.R_stim.vertices = stimuli.R_emptyVert
-        stimuli.L_stim.setAutoDraw(True)
-        stimuli.R_stim.setAutoDraw(True)
-    
-    elif exp.taskInfo['Paradigm'] == 'SST':
-        stimuli.L_stim.fillColor = exp.advSettings['Go color']
-        stimuli.R_stim.fillColor = exp.advSettings['Go color']       
-        for thisKey in allKeys:
-            if thisKey==exp.L_resp_key: # left response
-                thisTrial.L_RT_array_time.append(thisKey.rt) # store time-based RT
-                thisTrial.L_RT_array_pos.append(0) # store dummy position-based RT
-                thisTrial.L_duration = thisKey.duration # store duration for hold-and-release version
-                thisTrial.L_press = 1 # L key was pressed 
-            elif thisKey==exp.R_resp_key: # right response
-                thisTrial.R_RT_array_time.append(thisKey.rt)
-                thisTrial.R_RT_array_pos.append(0)
-                thisTrial.R_duration = thisKey.duration
-                thisTrial.R_press = 1
-            elif thisKey in ['q', 'escape']:
-                exp.win.close()
+    elif exp.taskInfo['Paradigm'] == 'SST': # draw go stimulus for SST paradigm
+        if thisTrial.L_draw == True:
+            stimuli.L_stim.fillColor = exp.advSettings['Go color']
+        if thisTrial.R_draw == True:
+            stimuli.R_stim.fillColor = exp.advSettings['Go color']
                 
 # Define stop_signal function
 #   Function for presenting stop signal when stop timer reaches 0
@@ -304,19 +281,15 @@ def stop_signal(exp,stimuli,thisTrial,trialStimuli):
 #   Function for processing and storing RTs on a given trial
 def getRT(exp,thisTrial):
     if thisTrial.L_press == 0: # if no press assign RTs of 0
-        thisTrial.L_RT_pos = 0
-        thisTrial.L_RT_time = 0
+        thisTrial.L_RT_time = -9999
     elif thisTrial.L_press == 1: # if press use the recorded RT
-        thisTrial.L_RT_pos = round(thisTrial.L_RT_array_pos[0] * 1000,1)
         if exp.taskInfo['Response mode'] == 'Hold-and-release': # use key duration if hold-and-release
             thisTrial.L_RT_time = round((thisTrial.L_RT_array_time[0] + thisTrial.L_duration) * 1000,1)
         else:
             thisTrial.L_RT_time = round(thisTrial.L_RT_array_time[0] * 1000,1)
     if thisTrial.R_press == 0:
-        thisTrial.R_RT_pos = 0
-        thisTrial.R_RT_time = 0
+        thisTrial.R_RT_time = -9999
     elif thisTrial.R_press == 1:
-        thisTrial.R_RT_pos = round(thisTrial.R_RT_array_pos[0] * 1000,1)
         if exp.taskInfo['Response mode'] == 'Hold-and-release':
             thisTrial.R_RT_time = round((thisTrial.R_RT_array_time[0] + thisTrial.R_duration) * 1000,1)
         else:
@@ -324,15 +297,14 @@ def getRT(exp,thisTrial):
     print('Left RT was %s ms'%round(thisTrial.L_RT_time,1)) # print left and right RTs to console
     print('Right RT was %s ms'%round(thisTrial.R_RT_time,1))
     
-    print(thisTrial.L_RT_pos-thisTrial.L_RT_time)
-    #print(thisTrial.R_RT_pos-thisTrial.R_RT_time)
+    print(thisTrial.L_RT_time)
 
 # Define feedback function
 #   Function for presenting feedback at end of a trial
-def feedback(exp,stimuli,trialInfo,thisTrial): 
+def feedback(exp,stimuli,trialInfo,thisTrial,trialStimuli): 
     if exp.taskInfo['Paradigm'] == 'ARI': # use positional RTs if ARI paradigm
-        L_RT = thisTrial.L_RT_pos
-        R_RT = thisTrial.R_RT_pos
+        L_RT = (stimuli.L_emptyVert[1][1]+stimuli.barTop)/exp.advSettings['Stimulus size (cm)']*trialStimuli.L_fillTime
+        R_RT = (stimuli.R_emptyVert[1][1]+stimuli.barTop)/exp.advSettings['Stimulus size (cm)']*trialStimuli.R_fillTime
     elif exp.taskInfo['Paradigm'] == 'SST': # use stored RTs if SST paradigm
         L_RT = thisTrial.L_RT_time
         R_RT = thisTrial.R_RT_time
@@ -433,7 +405,11 @@ def feedback(exp,stimuli,trialInfo,thisTrial):
     if exp.genSettings['Trial-by-trial feedback?'] == True: # draw feedback if option is selected
         exp.win.flip()            
     thisTrial.L_RT = thisTrial.L_RT_time # use stored RTs for stored data
+    if thisTrial.L_RT == -9999:
+        thisTrial.L_RT = float("nan")
     thisTrial.R_RT = thisTrial.R_RT_time
+    if thisTrial.R_RT == -9999:
+        thisTrial.R_RT = float("nan")
     if trialInfo.blockCount > 0:
         trialInfo.blockScore = trialInfo.blockScore + trialScore # updated block score
 
@@ -443,12 +419,12 @@ def staircaseSSD(exp,stopInfo,thisTrial):
     print('Stop time was %s'%(thisTrial.stopTime)) # print stop time of current trial to console
     if exp.genSettings['Staircase stop-signal delays?'] == True: # only staircase if option is enabled
         if thisTrial.trialType > 1: # if stop trial
-            if thisTrial.stopSuccess == 1: # if successful stop trial
-                if not stopInfo.stopTimeArray[thisTrial.staircase] + stopInfo.strcaseTime > (thisTrial.L_targetTime - exp.advSettings['Upper stop-limit (ms)']):
-                    stopInfo.stopTimeArray[thisTrial.staircase] = stopInfo.stopTimeArray[thisTrial.staircase] + stopInfo.strcaseTime
-            elif thisTrial.stopSuccess == 0: # if unsuccessful stop trial
-                if not stopInfo.stopTimeArray[thisTrial.staircase] - stopInfo.strcaseTime < exp.advSettings['Lower stop-limit (ms)']:
-                    stopInfo.stopTimeArray[thisTrial.staircase] = stopInfo.stopTimeArray[thisTrial.staircase] - stopInfo.strcaseTime
+                if thisTrial.stopSuccess == 1: # if successful stop trial
+                    if not stopInfo.stopTimeArray[thisTrial.staircase] + stopInfo.strcaseTime > (thisTrial.L_targetTime - exp.advSettings['Upper stop-limit (ms)']):
+                        stopInfo.stopTimeArray[thisTrial.staircase] = stopInfo.stopTimeArray[thisTrial.staircase] + stopInfo.strcaseTime
+                elif thisTrial.stopSuccess == 0: # if unsuccessful stop trial
+                    if not stopInfo.stopTimeArray[thisTrial.staircase] - stopInfo.strcaseTime < exp.advSettings['Lower stop-limit (ms)']:
+                        stopInfo.stopTimeArray[thisTrial.staircase] = stopInfo.stopTimeArray[thisTrial.staircase] - stopInfo.strcaseTime
                     
 # Define saveData function
 #   Function for saving data after each trial

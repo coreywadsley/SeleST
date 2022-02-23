@@ -87,7 +87,7 @@ class Experiment():
         if self.taskInfo['Paradigm'] == 'ARI': # default settings for ARI
             Defaults = {'Target time (ms)': 800, 'Trial length (s)': 1.5, 'Fixed delay length (s)': 0.5, 'Stop-both time (ms)': 600, 'Stop-left time (ms)': 550, 'Stop-right time (ms)': 550, 'Lower stop-limit (ms)': 150, 'Upper stop-limit (ms)': 50, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 15}
         elif self.taskInfo['Paradigm'] == 'SST': # default settings for SST
-            Defaults = {'Target time (ms)': 300, 'Trial length (s)': 1.5, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 300, 'Stop-left time (ms)': 250, 'Stop-right time (ms)': 250, 'Lower stop-limit (ms)': 150, 'Upper stop-limit (ms)': 50, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
+            Defaults = {'Target time (ms)': 300, 'Trial length (s)': 1.5, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 300, 'Stop-left time (ms)': 250, 'Stop-right time (ms)': 250, 'Lower stop-limit (ms)': 50, 'Upper stop-limit (ms)': -500, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
         self.advSettings = {
             'Send serial trigger at trial onset?': False, # option to send serial trigger at trial onset (NOTE: a compatible serial device will need to be set up before this works)
             'Left response key': 'n', # response key for left stimulus
@@ -152,7 +152,7 @@ class Experiment():
             self.frameDur = 1.0 / 60.0 * 1000 # could not measure, so guess
         print('Monitor frame rate is %s Hz' %(round(self.taskInfo['frameRate'],0))) # print out useful info on frame rate & duration for the interested user
         print('Frame duration is %s ms' %round(self.frameDur,1))        
-        
+
         # Here you can implement code to operate an external response box. 
         # The keyboard will be used if no response box is selected.
         if self.genSettings['Use response box?'] == True:
@@ -317,18 +317,18 @@ MODIFIED CLASSES CAN BE INSERTED BELOW
 """
 
 class Experiment_debug():
-    def __init__(self,_thisDir):
+    def __init__(self,_thisDir):        
         # Create dictionary with general task information (this dictionary will be exported to a .txt file if save data is selected)
         self.taskInfo = {
             'Experiment name': 'x', # name of experiment (included in filename)
             'Participant ID': 0, # ID of participant (included in filename)
             'Age (years)': 0, # age of participant
-            'Sex': ['-','F','M','Prefer not to say'], # sex of participant
-            'Handedness': ['Right-handed','Left-handed','Ambidextrous'], # handedness of participant
+            'Sex': ['-','F','M', 'Non-binary', 'Prefer not to say'], # sex of participant
+            'Handedness': ['Right-handed','Left-handed','Mixed-handed'], # handedness of participant
             'Paradigm': ['ARI','SST'], # use anticipatory response inhibition (ARI) or stop-signal task (SST) paradigm (NOTE: default option can be changed by switching order of array)
             'Response mode': ['Wait-and-press','Hold-and-release'], # option to run task in wait-and-press (trials start automatically) or hold-and-release (trials self-initiated by holding response keys) modes
-            'Include practice?': True, # include instructions and practice go-only & go/stop block
-            'Save data?': False, # option to save task data
+            'Include practice?': False, # include instructions and practice go-only & go/stop block
+            'Save data?': True, # option to save task data
             'Import trials?': False, # option to import file containing trial information as opposed to the options in general settings
             'File path': _thisDir, # file path to folder containing trials file to import
             'File name': 'trials_1.xlsx', # name of the file to import
@@ -352,14 +352,14 @@ class Experiment_debug():
             'Full-screen?': True, # option to run task in full-screen or borderless window
             'Use response box?': False, # option to enable external response box
             'Trial-by-trial feedback?': True, # option to present trial-by-trial feedback
-            'n practice go trials': 4, # number of go trials to include in practice go-only block
-            'n go trials per block': 2,
-            'n stop-both trials per block': 2,
+            'n practice go trials': 8, # number of go trials to include in practice go-only block
+            'n go trials per block': 0,
+            'n stop-both trials per block': 4,
             'n stop-left trials per block': 0,
             'n stop-right trials per block': 0,
             'n blocks': 2, # number of blocks to repeat the above trial arrangement over
-            'n forced go trials': 1, # number of go trials to force at the start of every block
-            'Staircase stop-signal delays?': True, 
+            'n forced go trials': 0, # number of go trials to force at the start of each block
+            'Staircase stop-signal delays?': True, # option to use staircased SSDs, SSDs will be fixed if not selected
             'Stop-signal delay step-size (ms)': 50, # step size to change stop-signal delay by if staircasing is enabled
             'Change advanced settings?':False} # option to change advanced settings via GUI              
         if self.taskInfo['Change general settings?']:
@@ -382,24 +382,24 @@ class Experiment_debug():
         if self.taskInfo['Paradigm'] == 'ARI': # default settings for ARI
             Defaults = {'Target time (ms)': 800, 'Trial length (s)': 1.5, 'Fixed delay length (s)': 0.5, 'Stop-both time (ms)': 600, 'Stop-left time (ms)': 550, 'Stop-right time (ms)': 550, 'Lower stop-limit (ms)': 150, 'Upper stop-limit (ms)': 50, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 15}
         elif self.taskInfo['Paradigm'] == 'SST': # default settings for SST
-            Defaults = {'Target time (ms)': 300, 'Trial length (s)': 1.5, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 300, 'Stop-left time (ms)': 250, 'Stop-right time (ms)': 250, 'Lower stop-limit (ms)': 150, 'Upper stop-limit (ms)': 50, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
+            Defaults = {'Target time (ms)': 300, 'Trial length (s)': 1.5, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 300, 'Stop-left time (ms)': 250, 'Stop-right time (ms)': 250, 'Lower stop-limit (ms)': 50, 'Upper stop-limit (ms)': -500, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
         self.advSettings = {
             'Send serial trigger at trial onset?': False, # option to send serial trigger at trial onset (NOTE: a compatible serial device will need to be set up before this works)
-            'Left response key': 'left', # response key for left stimulus
-            'Right response key': 'right', # response key for right stimulus
+            'Left response key': 'n', # response key for left stimulus
+            'Right response key': 'm', # response key for right stimulus
             'Target time (ms)': Defaults['Target time (ms)'], # ARI ONLY: target time for responses
             'Trial length (s)': Defaults['Trial length (s)'], # Length of trial
-            'Intertrial interval (s)': 1.5,
+            'Intertrial interval (s)': 1.5, # Length of intertrial interval
             'Fixed rise delay?': False, # option to use fixed rise delay, if false, random uniform delay is used (ARI: 0.5 - 1 s, SST: 1 -2 s)
             'Fixed delay length (s)': Defaults['Fixed delay length (s)'], # length of fixed rise delay if option is enabled
-            'Stop-both time (ms)': Defaults['Stop-both time (ms)'],
+            'Stop-both time (ms)': Defaults['Stop-both time (ms)'], # starting SSD for stop-both trials
             'Stop-left time (ms)': Defaults['Stop-left time (ms)'],
             'Stop-right time (ms)': Defaults['Stop-right time (ms)'],
-            'Lower stop-limit (ms)': Defaults['Lower stop-limit (ms)'],
-            'Upper stop-limit (ms)': Defaults['Upper stop-limit (ms)'],
-            'Positional stop signal': Defaults['Positional stop signal'], # option 
+            'Lower stop-limit (ms)': Defaults['Lower stop-limit (ms)'], # time relative to trial onset that the bars should not stop before'
+            'Upper stop-limit (ms)': Defaults['Upper stop-limit (ms)'], # time relative to target time that the bars should not stop after (e.g. 800 ms target, 150 ms upper stop-limit = 650 ms stopping limit)
+            'Positional stop signal': Defaults['Positional stop signal'], # ARI ONLY: option to use positional stop-signal (cessation of bar rising)
             'Stimulus size (cm)': Defaults['Stimulus size (cm)'], # size of the left and right stimuli (ARI = height of bars, SST = height of triangles)
-            'Target position': Defaults['Target position'], # ARI only: position of target lines as proportion of total bar height
+            'Target position': Defaults['Target position'], # ARI ONLY: position of target lines as proportion of total bar height
             'Cue color': 'black', # colour of cues (ARI = target lines, SST = outline of triangle)
             'Go color': 'black', # colour of go signal (ARI = filling bar, SST = filling of triangle)
             'Stop color': 'cyan', # colour of stop signal (same as above)
@@ -422,7 +422,7 @@ class Experiment_debug():
                      'Target position': 'ARI ONLY: Input where you would like the target lines to be positioned as proportion of total bar height (e.g. 0.8 equates to 80% of bar height/filling time)',
                      'Cue color': 'Input name of desired color of the cue (ARI = target lines, SST = triangle outline)',
                      'Go color': 'Input name of desired color of the go signal (ARI = filling bar, SST = triangle filling)',
-                     'Stop color': 'Input name of desired color of the stop signal (ARI = bar filling, SST = triangle filling)',
+                     'Stop color': 'Input name of desired color of the stop signal (ARI = filling bar, SST = triangle filling)',
                      'Background color': 'Input name of desired color of the background (for list of possible colors see https://www.w3schools.com/Colors/colors_names.asp )'})
         if dlg.OK==False: core.quit()
         
@@ -436,7 +436,7 @@ class Experiment_debug():
             allowGUI=False,
             units = 'cm',
             size = [1200, 1200],
-            screen=1)
+            screen = 0)
         
         # Measure the monitors refresh rate
         self.taskInfo['frameRate'] = self.win.getActualFrameRate()
@@ -447,7 +447,7 @@ class Experiment_debug():
             self.frameDur = 1.0 / 60.0 * 1000 # could not measure, so guess
         print('Monitor frame rate is %s Hz' %(round(self.taskInfo['frameRate'],0))) # print out useful info on frame rate & duration for the interested user
         print('Frame duration is %s ms' %round(self.frameDur,1))        
-        
+
         # Here you can implement code to operate an external response box. 
         # The keyboard will be used if no response box is selected.
         if self.genSettings['Use response box?'] == True:
@@ -455,7 +455,7 @@ class Experiment_debug():
             #self.rb = buttonbox.Buttonbox()    # example buttonbox from RuSocSci
             #self.L_resp_key = 'E'
             #self.R_resp_key = 'A'
-            if self.genSettings['Response mode'] == 'Hold-and-release':
+            if self.taskInfo['Response mode'] == 'Hold-and-release':
                 pass
             pass
         else:
@@ -472,7 +472,6 @@ class Experiment_debug():
 
         # Create clocks to monitor trial duration and trial times
         self.globalClock = core.Clock() # to track total time of experiment
-        self.trialClock = core.Clock() # to track time on a trial-by-trial basis
         self.holdClock = core.Clock() # to track press time when waiting for key press in hold and release
 
         # SAVE DATA
@@ -482,7 +481,7 @@ class Experiment_debug():
             os.makedirs(_thisDir + os.sep +'data/')
         if self.taskInfo['Save data?'] == True: # only save if option is selected
             self.Output = _thisDir + os.sep + u'data/SeleSt_%s_%s_%s' % (self.taskInfo['Participant ID'],
-                self.taskInfo['Experiment name'], self.taskInfo['date']) # create output file to store behavioural data.
+                self.taskInfo['Experiment name'], self.taskInfo['date']) # create output file to store behavioural data
             with open(self.Output+'.txt', 'a') as b: # create file w/ headers
                 b.write('block trial startTime trialName trialType stopTime L_press R_press L_targetTime R_targetTime L_RT R_RT\n')
             taskInfo_output = _thisDir + os.sep + u'data/SeleSt_%s_%s_%s_taskInfo.txt' % (self.taskInfo['Participant ID'],
@@ -502,7 +501,7 @@ class Experiment_debug():
             self.instr_2_points = visual.ImageStim(self.win, image=_thisDir+'/instructions/instr-2-points_SST.png')
             self.instr_3_stop = visual.ImageStim(self.win, image=_thisDir+'/instructions/instr-3-stop_SST.png')     
         self.instr_4_task = visual.ImageStim(self.win, image=_thisDir+'/instructions/instr-4-task.png') 
-        self.instr_5_taskEnd = visual.ImageStim(self.win, image=_thisDir+'/instructions/instr-5-taskEnd.png')                   
+        self.instr_5_taskEnd = visual.ImageStim(self.win, image=_thisDir+'/instructions/instr-5-taskEnd.png')                       
         if self.taskInfo['Include practice?'] == True: # markers to keep track of practice if option is selected
             self.practiceGo = True
             self.practiceStop = True

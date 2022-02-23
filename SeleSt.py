@@ -26,7 +26,7 @@ os.chdir(_thisDir)
 #   INITIALIZE
 # Here we are initializing all of the information that can change across sessions 
     # additional info for each class can be found in the SeleSt_initialize script
-exp = SeleSt_initialize.Experiment(_thisDir) # initialize exp class
+exp = SeleSt_initialize.Experiment_debug(_thisDir) # initialize exp class
 stimuli = SeleSt_initialize.Stimuli(exp) # initialize stimuli class 
 trialInfo = SeleSt_initialize.Trials(exp) # initialize trialInfo class
 stopInfo = SeleSt_initialize.SSD(exp) # initialize stopInfo class
@@ -45,19 +45,18 @@ for thisBlock in trialInfo.blockList: # iterate over blocks
         fixPeriod = SeleSt_run.fixationPeriod(exp) # run fixation period
         if exp.taskInfo['Response mode'] == 'Wait-and-press': # clear events in buffer if wait-and-press version
             exp.rb.clearEvents()
-        exp.rb.clock.reset() # reset keyboard and trial clock
-        exp.trialClock.reset()
         startTime = round(exp.globalClock.getTime(),1) # record trial start time and print it to the console
         print('Trial started at %s seconds'%startTime)
         trialTimer = core.CountdownTimer(exp.advSettings['Trial length (s)']) # set trial timer
         stopTimer = core.CountdownTimer(thisTrial.stopTime/1000) # set stop timer
+        exp.win.callOnFlip(exp.rb.clock.reset)
         while trialTimer.getTime() > 0: # run trial while timer is positive
-            SeleSt_run.runTrial(exp,stimuli,thisTrial,trialStimuli)
+            SeleSt_run.runTrial(exp,stimuli,thisTrial,trialStimuli,trialTimer)
             if stopTimer.getTime() <= 0: # present stop signal when stop timer reaches 0
                 SeleSt_run.stop_signal(exp,stimuli,thisTrial,trialStimuli)
             exp.win.flip() # update stimuli on every frame
         SeleSt_run.getRT(exp, thisTrial) # get RTs for current trial
-        SeleSt_run.feedback(exp, stimuli, trialInfo, thisTrial) # calculate response accuracy and present feedback
+        SeleSt_run.feedback(exp, stimuli, trialInfo, thisTrial, trialStimuli) # calculate response accuracy and present feedback
         SeleSt_run.staircaseSSD(exp, stopInfo, thisTrial) # staircase SSD if applicable
         SeleSt_run.saveData(exp, trialInfo, thisTrial, startTime) # save data from current trial
         SeleSt_run.ITI(exp) # run intertrial interval
