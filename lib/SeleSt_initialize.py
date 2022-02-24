@@ -35,8 +35,8 @@ class Experiment():
             'Include practice?': True, # include instructions and practice go-only & go/stop block
             'Save data?': True, # option to save task data
             'Import trials?': False, # option to import file containing trial information as opposed to the options in general settings
-            'File path': _thisDir, # file path to folder containing trials file to import
-            'File name': 'trials_1.xlsx', # name of the file to import
+            'File path': _thisDir + os.sep + 'conditions', # file path to folder containing trials file to import
+            'File name': 'example_trials_1.csv', # name of the file to import
             'Change general settings?': False} # option to change general settings via GUI
         dlg=gui.DlgFromDict(dictionary=self.taskInfo, title='SeleSt', # Create GUI for taskInfo dictionary w/ tool tips
             order = ('Experiment name', 'Participant ID', 'Age (years)', 'Sex', 'Handedness', 'Paradigm', 'Response mode', 'Include practice?', 'Save data?', 'Import trials?', 'File path', 'File name', 'Change general settings?'),
@@ -85,17 +85,19 @@ class Experiment():
 
         # Create dictionary with advanced task settings (default settings dependent on paradigm)
         if self.taskInfo['Paradigm'] == 'ARI': # default settings for ARI
-            Defaults = {'Target time (ms)': 800, 'Trial length (s)': 1.5, 'Fixed delay length (s)': 0.5, 'Stop-both time (ms)': 600, 'Stop-left time (ms)': 550, 'Stop-right time (ms)': 550, 'Lower stop-limit (ms)': 150, 'Upper stop-limit (ms)': 50, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 15}
+            Defaults = {'Target time (ms)': 800, 'Trial length (s)': 1.5, 'Variable delay lower limit (s)':0.5, 'Variable delay upper limit (s)': 1, 'Fixed delay length (s)': 0.5, 'Stop-both time (ms)': 600, 'Stop-left time (ms)': 550, 'Stop-right time (ms)': 550, 'Lower stop-limit (ms)': 150, 'Upper stop-limit (ms)': 50, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 15}
         elif self.taskInfo['Paradigm'] == 'SST': # default settings for SST
-            Defaults = {'Target time (ms)': 300, 'Trial length (s)': 1.5, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 300, 'Stop-left time (ms)': 250, 'Stop-right time (ms)': 250, 'Lower stop-limit (ms)': 50, 'Upper stop-limit (ms)': -500, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
+            Defaults = {'Target time (ms)': 300, 'Trial length (s)': 1.5, 'Variable delay lower limit (s)':0.5, 'Variable delay upper limit (s)': 1, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 300, 'Stop-left time (ms)': 250, 'Stop-right time (ms)': 250, 'Lower stop-limit (ms)': 50, 'Upper stop-limit (ms)': -500, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
         self.advSettings = {
             'Send serial trigger at trial onset?': False, # option to send serial trigger at trial onset (NOTE: a compatible serial device will need to be set up before this works)
             'Left response key': 'n', # response key for left stimulus
             'Right response key': 'm', # response key for right stimulus
             'Target time (ms)': Defaults['Target time (ms)'], # ARI ONLY: target time for responses
             'Trial length (s)': Defaults['Trial length (s)'], # Length of trial
-            'Intertrial interval (s)': 1.5, # Length of intertrial interval
-            'Fixed rise delay?': False, # option to use fixed rise delay, if false, random uniform delay is used (ARI: 0.5 - 1 s, SST: 1 -2 s)
+            'Intertrial interval (s)': 1, # Length of intertrial interval
+            'Fixed delay?': False, # option to use fixed start delay, if false, random uniform delay is used
+            'Variable delay lower limit (s)': Defaults['Variable delay lower limit (s)'],
+            'Variable delay upper limit (s)': Defaults['Variable delay upper limit (s)'],
             'Fixed delay length (s)': Defaults['Fixed delay length (s)'], # length of fixed rise delay if option is enabled
             'Stop-both time (ms)': Defaults['Stop-both time (ms)'], # starting SSD for stop-both trials
             'Stop-left time (ms)': Defaults['Stop-left time (ms)'],
@@ -112,7 +114,7 @@ class Experiment():
             }        
         if self.genSettings['Change advanced settings?']:
             dlg=gui.DlgFromDict(dictionary=self.advSettings, title='SeleSt (Advanced settings)', # Create GUI for advExpInfo dictionary if advanced option was selected
-                order = ('Send serial trigger at trial onset?', 'Left response key', 'Right response key', 'Target time (ms)', 'Trial length (s)', 'Intertrial interval (s)', 'Fixed rise delay?', 'Fixed delay length (s)', 'Stop-both time (ms)', 'Stop-left time (ms)', 'Stop-right time (ms)', 'Lower stop-limit (ms)', 'Upper stop-limit (ms)', 'Positional stop signal', 'Target position', 'Stimulus size (cm)', 'Background color', 'Cue color', 'Go color', 'Stop color'),
+                order = ('Send serial trigger at trial onset?', 'Left response key', 'Right response key', 'Target time (ms)', 'Trial length (s)', 'Intertrial interval (s)', 'Fixed delay?', 'Variable delay lower limit (s)', 'Variable delay upper limit (s)', 'Fixed delay length (s)', 'Stop-both time (ms)', 'Stop-left time (ms)', 'Stop-right time (ms)', 'Lower stop-limit (ms)', 'Upper stop-limit (ms)', 'Positional stop signal', 'Target position', 'Stimulus size (cm)', 'Background color', 'Cue color', 'Go color', 'Stop color'),
                 tip = {
                      'Send serial trigger at trial onset?': 'Select this if you would like to send a trigger at trial onset (NOTE: a serial device must be set up for this to work)',
                      'Target time (ms)': 'Input the desired target response time (NOTE: keep in mind that trial length needs to be adjusted to allow for complete filling if target time is extended too far)',
@@ -258,7 +260,7 @@ class Stimuli:
 class Trials:
     def __init__(self,exp):
         if exp.taskInfo['Import trials?'] == True: # import trials from conditions file
-            self.trialList = data.importConditions(exp.taskInfo['File path'] + exp.taskInfo['File name'])
+            self.trialList = data.importConditions(exp.taskInfo['File path'] + os.sep + exp.taskInfo['File name'])
             self.blockTrials = np.array_split(self.trialList,exp.genSettings['n blocks'])
         else:
             nGoTrials = [1] * exp.genSettings['n go trials per block'] # set number of go and stop trials
@@ -328,10 +330,10 @@ class Experiment_debug():
             'Paradigm': ['ARI','SST'], # use anticipatory response inhibition (ARI) or stop-signal task (SST) paradigm (NOTE: default option can be changed by switching order of array)
             'Response mode': ['Wait-and-press','Hold-and-release'], # option to run task in wait-and-press (trials start automatically) or hold-and-release (trials self-initiated by holding response keys) modes
             'Include practice?': False, # include instructions and practice go-only & go/stop block
-            'Save data?': True, # option to save task data
+            'Save data?': False, # option to save task data
             'Import trials?': False, # option to import file containing trial information as opposed to the options in general settings
-            'File path': _thisDir, # file path to folder containing trials file to import
-            'File name': 'trials_1.xlsx', # name of the file to import
+            'File path': _thisDir + os.sep + 'conditions', # file path to folder containing trials file to import
+            'File name': 'example_trials_1.csv', # name of the file to import
             'Change general settings?': False} # option to change general settings via GUI
         dlg=gui.DlgFromDict(dictionary=self.taskInfo, title='SeleSt', # Create GUI for taskInfo dictionary w/ tool tips
             order = ('Experiment name', 'Participant ID', 'Age (years)', 'Sex', 'Handedness', 'Paradigm', 'Response mode', 'Include practice?', 'Save data?', 'Import trials?', 'File path', 'File name', 'Change general settings?'),
@@ -352,15 +354,15 @@ class Experiment_debug():
             'Full-screen?': True, # option to run task in full-screen or borderless window
             'Use response box?': False, # option to enable external response box
             'Trial-by-trial feedback?': True, # option to present trial-by-trial feedback
-            'n practice go trials': 8, # number of go trials to include in practice go-only block
+            'n practice go trials': 36, # number of go trials to include in practice go-only block
             'n go trials per block': 0,
-            'n stop-both trials per block': 4,
-            'n stop-left trials per block': 0,
+            'n stop-both trials per block': 0,
+            'n stop-left trials per block': 4,
             'n stop-right trials per block': 0,
             'n blocks': 2, # number of blocks to repeat the above trial arrangement over
             'n forced go trials': 0, # number of go trials to force at the start of each block
             'Staircase stop-signal delays?': True, # option to use staircased SSDs, SSDs will be fixed if not selected
-            'Stop-signal delay step-size (ms)': 50, # step size to change stop-signal delay by if staircasing is enabled
+            'Stop-signal delay step-size (ms)': 33, # step size to change stop-signal delay by if staircasing is enabled
             'Change advanced settings?':False} # option to change advanced settings via GUI              
         if self.taskInfo['Change general settings?']:
             dlg=gui.DlgFromDict(dictionary=self.genSettings, title='SeleSt (general settings)', # Create GUI for expInfo dictionary w/ tool tips
@@ -380,17 +382,19 @@ class Experiment_debug():
 
         # Create dictionary with advanced task settings (default settings dependent on paradigm)
         if self.taskInfo['Paradigm'] == 'ARI': # default settings for ARI
-            Defaults = {'Target time (ms)': 800, 'Trial length (s)': 1.5, 'Fixed delay length (s)': 0.5, 'Stop-both time (ms)': 600, 'Stop-left time (ms)': 550, 'Stop-right time (ms)': 550, 'Lower stop-limit (ms)': 150, 'Upper stop-limit (ms)': 50, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 15}
+            Defaults = {'Target time (ms)': 800, 'Trial length (s)': 1.5, 'Variable delay lower limit (s)':0.5, 'Variable delay upper limit (s)': 1, 'Fixed delay length (s)': 0.5, 'Stop-both time (ms)': 600, 'Stop-left time (ms)': 550, 'Stop-right time (ms)': 550, 'Lower stop-limit (ms)': 150, 'Upper stop-limit (ms)': 50, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 15}
         elif self.taskInfo['Paradigm'] == 'SST': # default settings for SST
-            Defaults = {'Target time (ms)': 300, 'Trial length (s)': 1.5, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 300, 'Stop-left time (ms)': 250, 'Stop-right time (ms)': 250, 'Lower stop-limit (ms)': 50, 'Upper stop-limit (ms)': -500, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
+            Defaults = {'Target time (ms)': 300, 'Trial length (s)': 1.5, 'Variable delay lower limit (s)':0.5, 'Variable delay upper limit (s)': 1, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 300, 'Stop-left time (ms)': 349, 'Stop-right time (ms)': 250, 'Lower stop-limit (ms)': 50, 'Upper stop-limit (ms)': -500, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
         self.advSettings = {
             'Send serial trigger at trial onset?': False, # option to send serial trigger at trial onset (NOTE: a compatible serial device will need to be set up before this works)
             'Left response key': 'n', # response key for left stimulus
             'Right response key': 'm', # response key for right stimulus
             'Target time (ms)': Defaults['Target time (ms)'], # ARI ONLY: target time for responses
             'Trial length (s)': Defaults['Trial length (s)'], # Length of trial
-            'Intertrial interval (s)': 1.5, # Length of intertrial interval
-            'Fixed rise delay?': False, # option to use fixed rise delay, if false, random uniform delay is used (ARI: 0.5 - 1 s, SST: 1 -2 s)
+            'Intertrial interval (s)': 1, # Length of intertrial interval
+            'Fixed delay?': False, # option to use fixed start delay, if false, random uniform delay is used
+            'Variable delay lower limit (s)': Defaults['Variable delay lower limit (s)'],
+            'Variable delay upper limit (s)': Defaults['Variable delay upper limit (s)'],
             'Fixed delay length (s)': Defaults['Fixed delay length (s)'], # length of fixed rise delay if option is enabled
             'Stop-both time (ms)': Defaults['Stop-both time (ms)'], # starting SSD for stop-both trials
             'Stop-left time (ms)': Defaults['Stop-left time (ms)'],
@@ -407,7 +411,7 @@ class Experiment_debug():
             }        
         if self.genSettings['Change advanced settings?']:
             dlg=gui.DlgFromDict(dictionary=self.advSettings, title='SeleSt (Advanced settings)', # Create GUI for advExpInfo dictionary if advanced option was selected
-                order = ('Send serial trigger at trial onset?', 'Left response key', 'Right response key', 'Target time (ms)', 'Trial length (s)', 'Intertrial interval (s)', 'Fixed rise delay?', 'Fixed delay length (s)', 'Stop-both time (ms)', 'Stop-left time (ms)', 'Stop-right time (ms)', 'Lower stop-limit (ms)', 'Upper stop-limit (ms)', 'Positional stop signal', 'Target position', 'Stimulus size (cm)', 'Background color', 'Cue color', 'Go color', 'Stop color'),
+                order = ('Send serial trigger at trial onset?', 'Left response key', 'Right response key', 'Target time (ms)', 'Trial length (s)', 'Intertrial interval (s)', 'Fixed delay?', 'Variable delay lower limit (s)', 'Variable delay upper limit (s)', 'Fixed delay length (s)', 'Stop-both time (ms)', 'Stop-left time (ms)', 'Stop-right time (ms)', 'Lower stop-limit (ms)', 'Upper stop-limit (ms)', 'Positional stop signal', 'Target position', 'Stimulus size (cm)', 'Background color', 'Cue color', 'Go color', 'Stop color'),
                 tip = {
                      'Send serial trigger at trial onset?': 'Select this if you would like to send a trigger at trial onset (NOTE: a serial device must be set up for this to work)',
                      'Target time (ms)': 'Input the desired target response time (NOTE: keep in mind that trial length needs to be adjusted to allow for complete filling if target time is extended too far)',
@@ -472,6 +476,7 @@ class Experiment_debug():
 
         # Create clocks to monitor trial duration and trial times
         self.globalClock = core.Clock() # to track total time of experiment
+        self.trialClock = core.Clock() # to track time on a trial-by-trial basis
         self.holdClock = core.Clock() # to track press time when waiting for key press in hold and release
 
         # SAVE DATA

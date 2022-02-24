@@ -37,12 +37,13 @@ stopInfo = SeleSt_initialize.SSD(exp) # initialize stopInfo class
 for thisBlock in trialInfo.blockList: # iterate over blocks
     thisBlockTrials = SeleSt_run.Block(exp, trialInfo) # process trials in the current block
     for trial in thisBlockTrials: # iterate over trials in the current block
+        print(trial)
         trialInfo.trialCount = trialInfo.trialCount + 1 # track trial number
         thisTrial = SeleSt_run.Initialize_trial(exp, trialInfo, stopInfo, trial) # set parameters of current trial
         print('Trial number %s'%(trialInfo.trialCount) + ' - ' + thisTrial.trialName) # print trial number & name to console
-        trialStimuli = SeleSt_run.Start_Trial(exp,stimuli,thisTrial) # set additional trial related parameters
+        trialStimuli = SeleSt_run.Start_Trial(exp,stimuli,trialInfo,thisTrial,trial) # set additional trial related parameters
         exp.win.flip() # draw stimuli at start of trial
-        fixPeriod = SeleSt_run.fixationPeriod(exp) # run fixation period
+        fixPeriod = SeleSt_run.fixationPeriod(exp,stimuli) # run fixation period
         if exp.taskInfo['Response mode'] == 'Wait-and-press': # clear events in buffer if wait-and-press version
             exp.rb.clearEvents()
         startTime = round(exp.globalClock.getTime(),1) # record trial start time and print it to the console
@@ -62,4 +63,4 @@ for thisBlock in trialInfo.blockList: # iterate over blocks
         SeleSt_run.ITI(exp) # run intertrial interval
         SeleSt_run.endTrial(exp,stimuli) # remove stimuli from screen
     SeleSt_run.endBlock(exp, trialInfo, thisBlockTrials) # calculate block score and present end-of-block feedback
-SeleSt_run.endTask(exp) # end the task when all blocks have been completed
+SeleSt_run.endTask(exp, stimuli) # end the task when all blocks have been completed
