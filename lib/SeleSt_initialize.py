@@ -55,6 +55,7 @@ class Experiment():
         self.genSettings = {
             'Monitor name': 'testMonitor', # name of monitor (see https://www.psychopy.org/builder/builderMonitors.html for more info)
             'Full-screen?': True, # option to run task in full-screen or borderless window
+            'Screen': 0, # screen to use (0 = primary display)
             'Use response box?': False, # option to enable external response box
             'Trial-by-trial feedback?': True, # option to present trial-by-trial feedback
             'n practice go trials': 36, # number of go trials to include in practice go-only block
@@ -69,10 +70,11 @@ class Experiment():
             'Change advanced settings?':False} # option to change advanced settings via GUI              
         if self.taskInfo['Change general settings?']:
             dlg=gui.DlgFromDict(dictionary=self.genSettings, title='SeleSt (general settings)', # Create GUI for expInfo dictionary w/ tool tips
-                order = ('Monitor name', 'Full-screen?', 'Use response box?', 'Trial-by-trial feedback?', 'n practice go trials', 'n go trials per block', 'n stop-both trials per block', 'n stop-left trials per block', 'n stop-right trials per block', 'n blocks', 'n forced go trials', 'Staircase stop-signal delays?', 'Stop-signal delay step-size (ms)', 'Change advanced settings?'),
+                order = ('Monitor name', 'Full-screen?', 'Screen', 'Use response box?', 'Trial-by-trial feedback?', 'n practice go trials', 'n go trials per block', 'n stop-both trials per block', 'n stop-left trials per block', 'n stop-right trials per block', 'n blocks', 'n forced go trials', 'Staircase stop-signal delays?', 'Stop-signal delay step-size (ms)', 'Change advanced settings?'),
                 tip = {
                      'Monitor name': 'Input name of the monitor being used to present the task (see Monitor Centre for more info)',
                      'Full-screen?': 'Select this if you would like to run the task in full-screen mode (recommended for data collection)',
+                     'Screen': 'Screen to use (0 is primary display, 1 is second display etc)',
                      'Use response box?': 'Select this if you would like to use an external response box',
                      'Trial-by-trial feedback?': 'Select this if you would like to present trial-by-trial feedback',
                      'n practice go trials': 'Number of go trials to include in practice go-only block',
@@ -85,9 +87,9 @@ class Experiment():
 
         # Create dictionary with advanced task settings (default settings dependent on paradigm)
         if self.taskInfo['Paradigm'] == 'ARI': # default settings for ARI
-            Defaults = {'Target time (ms)': 800, 'Trial length (s)': 1.5, 'Variable delay lower limit (s)':0.5, 'Variable delay upper limit (s)': 1, 'Fixed delay length (s)': 0.5, 'Stop-both time (ms)': 600, 'Stop-left time (ms)': 550, 'Stop-right time (ms)': 550, 'Lower stop-limit (ms)': 150, 'Upper stop-limit (ms)': 50, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 15}
+            Defaults = {'Target time (ms)': 800, 'Trial length (s)': 1.25, 'Variable delay lower limit (s)':0.5, 'Variable delay upper limit (s)': 1, 'Fixed delay length (s)': 0.5, 'Stop-both time (ms)': 600, 'Stop-left time (ms)': 550, 'Stop-right time (ms)': 550, 'Lower stop-limit (ms)': 150, 'Upper stop-limit (ms)': 50, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 15}
         elif self.taskInfo['Paradigm'] == 'SST': # default settings for SST
-            Defaults = {'Target time (ms)': 300, 'Trial length (s)': 1.5, 'Variable delay lower limit (s)':0.5, 'Variable delay upper limit (s)': 1, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 300, 'Stop-left time (ms)': 250, 'Stop-right time (ms)': 250, 'Lower stop-limit (ms)': 50, 'Upper stop-limit (ms)': -500, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
+            Defaults = {'Target time (ms)': 300, 'Trial length (s)': 1.25, 'Variable delay lower limit (s)':0.5, 'Variable delay upper limit (s)': 1, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 300, 'Stop-left time (ms)': 250, 'Stop-right time (ms)': 250, 'Lower stop-limit (ms)': 50, 'Upper stop-limit (ms)': -500, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
         self.advSettings = {
             'Send serial trigger at trial onset?': False, # option to send serial trigger at trial onset (NOTE: a compatible serial device will need to be set up before this works)
             'Left response key': 'n', # response key for left stimulus
@@ -143,7 +145,7 @@ class Experiment():
             allowGUI=False,
             units = 'cm',
             size = [1200, 1200],
-            screen = 0)
+            screen = self.genSettings['Screen'])
         
         # Measure the monitors refresh rate
         self.taskInfo['frameRate'] = self.win.getActualFrameRate()
@@ -224,10 +226,10 @@ class Stimuli:
         
         # Create stimuli for SST
         if exp.taskInfo['Paradigm'] == 'SST':
-            self.L_cue = visual.Polygon(exp.win, edges=3, fillColor=None, lineWidth=5, lineColor=exp.advSettings['Cue color'], opacity=1, units='cm', size=[exp.advSettings['Stimulus size (cm)'],0.6*exp.advSettings['Stimulus size (cm)']], ori=-90, pos=[-1,0])
-            self.L_stim = visual.Polygon(exp.win, edges=3, fillColor=exp.advSettings['Go color'], lineWidth=5, lineColor=exp.advSettings['Cue color'], opacity=1, units='cm', size=[exp.advSettings['Stimulus size (cm)'],0.6*exp.advSettings['Stimulus size (cm)']], ori=-90, pos=[-1,0])
-            self.R_cue = visual.Polygon(exp.win, edges=3, fillColor=None, lineWidth=5, lineColor=exp.advSettings['Cue color'], opacity=1, units='cm', size=[exp.advSettings['Stimulus size (cm)'],0.6*exp.advSettings['Stimulus size (cm)']], ori=90, pos=[1,0])
-            self.R_stim = visual.Polygon(exp.win, edges=3, fillColor=exp.advSettings['Go color'], lineWidth=5, lineColor=exp.advSettings['Cue color'], opacity=1, units='cm', size=[exp.advSettings['Stimulus size (cm)'],0.6*exp.advSettings['Stimulus size (cm)']], ori=90, pos=[1,0])
+            self.L_cue = visual.Polygon(exp.win, edges=3, fillColor=None, lineWidth=5, lineColor=exp.advSettings['Cue color'], opacity=1, units='cm', size=[exp.advSettings['Stimulus size (cm)']*0.6,exp.advSettings['Stimulus size (cm)']], ori=-90, pos=[-1,0])
+            self.L_stim = visual.Polygon(exp.win, edges=3, fillColor=exp.advSettings['Go color'], lineWidth=5, lineColor=exp.advSettings['Cue color'], opacity=1, units='cm', size=[exp.advSettings['Stimulus size (cm)']*0.6,exp.advSettings['Stimulus size (cm)']], ori=-90, pos=[-1,0])
+            self.R_cue = visual.Polygon(exp.win, edges=3, fillColor=None, lineWidth=5, lineColor=exp.advSettings['Cue color'], opacity=1, units='cm', size=[exp.advSettings['Stimulus size (cm)']*0.6,exp.advSettings['Stimulus size (cm)']], ori=90, pos=[1,0])
+            self.R_stim = visual.Polygon(exp.win, edges=3, fillColor=exp.advSettings['Go color'], lineWidth=5, lineColor=exp.advSettings['Cue color'], opacity=1, units='cm', size=[exp.advSettings['Stimulus size (cm)']*0.6,exp.advSettings['Stimulus size (cm)']], ori=90, pos=[1,0])
         
         # Create stimuli for ARI
         elif exp.taskInfo['Paradigm'] == 'ARI':
@@ -362,7 +364,7 @@ class Experiment_debug():
             'n blocks': 2, # number of blocks to repeat the above trial arrangement over
             'n forced go trials': 0, # number of go trials to force at the start of each block
             'Staircase stop-signal delays?': True, # option to use staircased SSDs, SSDs will be fixed if not selected
-            'Stop-signal delay step-size (ms)': 33, # step size to change stop-signal delay by if staircasing is enabled
+            'Stop-signal delay step-size (ms)': 28, # step size to change stop-signal delay by if staircasing is enabled
             'Change advanced settings?':False} # option to change advanced settings via GUI              
         if self.taskInfo['Change general settings?']:
             dlg=gui.DlgFromDict(dictionary=self.genSettings, title='SeleSt (general settings)', # Create GUI for expInfo dictionary w/ tool tips
@@ -384,7 +386,7 @@ class Experiment_debug():
         if self.taskInfo['Paradigm'] == 'ARI': # default settings for ARI
             Defaults = {'Target time (ms)': 800, 'Trial length (s)': 1.5, 'Variable delay lower limit (s)':0.5, 'Variable delay upper limit (s)': 1, 'Fixed delay length (s)': 0.5, 'Stop-both time (ms)': 600, 'Stop-left time (ms)': 550, 'Stop-right time (ms)': 550, 'Lower stop-limit (ms)': 150, 'Upper stop-limit (ms)': 50, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 15}
         elif self.taskInfo['Paradigm'] == 'SST': # default settings for SST
-            Defaults = {'Target time (ms)': 300, 'Trial length (s)': 1.5, 'Variable delay lower limit (s)':0.5, 'Variable delay upper limit (s)': 1, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 300, 'Stop-left time (ms)': 349, 'Stop-right time (ms)': 250, 'Lower stop-limit (ms)': 50, 'Upper stop-limit (ms)': -500, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
+            Defaults = {'Target time (ms)': 300, 'Trial length (s)': 1.5, 'Variable delay lower limit (s)':0.5, 'Variable delay upper limit (s)': 1, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 300, 'Stop-left time (ms)': 248, 'Stop-right time (ms)': 250, 'Lower stop-limit (ms)': 50, 'Upper stop-limit (ms)': -500, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
         self.advSettings = {
             'Send serial trigger at trial onset?': False, # option to send serial trigger at trial onset (NOTE: a compatible serial device will need to be set up before this works)
             'Left response key': 'n', # response key for left stimulus
@@ -465,7 +467,9 @@ class Experiment_debug():
         else:
             self.rb = keyboard.Keyboard()  # use input rom keyboard
             self.L_resp_key = self.advSettings['Left response key']
-            self.R_resp_key = self.advSettings['Right response key']        
+            self.R_resp_key = self.advSettings['Right response key']    
+            
+        print(self.rb.getBackend())
                     
         # Here you can set up a serial device (e.g. to send trigger at trial onset)
         if self.advSettings['Send serial trigger at trial onset?'] == True:    

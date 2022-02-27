@@ -99,18 +99,18 @@ class Initialize_trial:
 #   Here the parameters for the current trial are implemented
 class Start_Trial:
     def __init__(self,exp,stimuli,trialInfo,thisTrial,trial):
-        if exp.taskInfo['Import trials?'] == True and trialInfo.blockCount > 0: # use imported trial information if selected
+        if exp.taskInfo['Import trials?'] == True and trialInfo.blockCount > 0: # use imported trial information if selected (additional variables to change trial-by-trial should be inserted below, e.g., L_targetTime & R_targetTime)
             exp.advSettings['Go color'] = trial['go_color']
             exp.advSettings['Stop color'] = trial['stop_color']
             stimuli.L_cue.lineColor = trial['L_cue_color']
             stimuli.R_cue.lineColor = trial['R_cue_color']
-            thisTrial.L_targetTime = trial['L_targetTime']
-            thisTrial.R_targetTime = trial['R_targetTime']
-        else: # use GUI if not importing trials
+            # thisTrial.L_targetTime = trial['L_targetTime']
+            # thisTrial.R_targetTime = trial['R_targetTime']
+        else: # use GUI if not importing trials 
             stimuli.L_cue.lineColor = exp.advSettings['Cue color']
             stimuli.R_cue.lineColor = exp.advSettings['Cue color']
-            thisTrial.L_targetTime = exp.advSettings['Target time (ms)']
-            thisTrial.R_targetTime = exp.advSettings['Target time (ms)']          
+        thisTrial.L_targetTime = exp.advSettings['Target time (ms)']
+        thisTrial.R_targetTime = exp.advSettings['Target time (ms)']          
         # Start ARI trial        
         if exp.taskInfo['Paradigm'] == 'ARI':
             self.L_fillTime = thisTrial.L_targetTime / exp.advSettings['Target position'] # left bar fill time

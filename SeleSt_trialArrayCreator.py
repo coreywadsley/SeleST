@@ -67,7 +67,7 @@ n_blocks = 12
     # L_targetTime: target time for L response (ARI: influnces speed of filling bar)
     # R_targetTime: same as above for R response
 
-# Additional variables (e.g., background colour) can easily be included by inserting an additional 
+# Additional variables (e.g., L_targetTime & R_targetTime) can easily be included by inserting an additional 
 # variable to the dictionary and adding the variable to SeleSt_run.Start_trial
 
 # Create an empty dataframe with relevant variables
@@ -80,9 +80,9 @@ trialTable = pd.DataFrame(columns=[
     'go_color',
     'stop_color',
     'L_cue_color',
-    'R_cue_color',
-    'L_targetTime',
-    'R_targetTime'
+    'R_cue_color'
+#    'L_targetTime',
+#    'R_targetTime'
     ])
 
 trialList = [ # list of trial types
@@ -94,11 +94,9 @@ trialList = [ # list of trial types
  'trialType': 1,
  'ssd': 0,
  'go_color': 'black',
- 'stop_color': 'cyan',
+ 'stop_color': 'black',
  'L_cue_color': 'black',
- 'R_cue_color': 'black',
- 'L_targetTime': 800,
- 'R_targetTime': 800
+ 'R_cue_color': 'black'
  },
 # Stop-all trials
 {
@@ -109,9 +107,7 @@ trialList = [ # list of trial types
  'go_color': 'black',
  'stop_color': 'cyan',
  'L_cue_color': 'black',
- 'R_cue_color': 'black',
- 'L_targetTime': 800,
- 'R_targetTime': 800
+ 'R_cue_color': 'black'
  },
 # Stop-left trials
 {
@@ -122,9 +118,7 @@ trialList = [ # list of trial types
  'go_color': 'black',
  'stop_color': 'cyan',
  'L_cue_color': 'black',
- 'R_cue_color': 'black',
- 'L_targetTime': 800,
- 'R_targetTime': 800
+ 'R_cue_color': 'black'
  },
 # Stop-right trials
 {
@@ -135,9 +129,7 @@ trialList = [ # list of trial types
  'go_color': 'black',
  'stop_color': 'cyan',
  'L_cue_color': 'black',
- 'R_cue_color': 'black',
- 'L_targetTime': 800,
- 'R_targetTime': 800
+ 'R_cue_color': 'black'
  }
 
 ]

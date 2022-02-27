@@ -26,7 +26,7 @@ os.chdir(_thisDir)
 #   INITIALIZE
 # Here we are initializing all of the information that can change across sessions 
     # additional info for each class can be found in the SeleSt_initialize script
-exp = SeleSt_initialize.Experiment_debug(_thisDir) # initialize exp class
+exp = SeleSt_initialize.Experiment(_thisDir) # initialize exp class
 stimuli = SeleSt_initialize.Stimuli(exp) # initialize stimuli class 
 trialInfo = SeleSt_initialize.Trials(exp) # initialize trialInfo class
 stopInfo = SeleSt_initialize.SSD(exp) # initialize stopInfo class
@@ -37,7 +37,6 @@ stopInfo = SeleSt_initialize.SSD(exp) # initialize stopInfo class
 for thisBlock in trialInfo.blockList: # iterate over blocks
     thisBlockTrials = SeleSt_run.Block(exp, trialInfo) # process trials in the current block
     for trial in thisBlockTrials: # iterate over trials in the current block
-        print(trial)
         trialInfo.trialCount = trialInfo.trialCount + 1 # track trial number
         thisTrial = SeleSt_run.Initialize_trial(exp, trialInfo, stopInfo, trial) # set parameters of current trial
         print('Trial number %s'%(trialInfo.trialCount) + ' - ' + thisTrial.trialName) # print trial number & name to console
