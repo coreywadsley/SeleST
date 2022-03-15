@@ -50,16 +50,19 @@ for thisBlock in trialInfo.blockList: # iterate over blocks
         trialTimer = core.CountdownTimer(exp.advSettings['Trial length (s)']) # set trial timer
         stopTimer = core.CountdownTimer(thisTrial.stopTime/1000) # set stop timer
         exp.win.callOnFlip(exp.rb.clock.reset)
+        frameTimer = core.CountdownTimer((exp.frameDur/2)/1000)
         while trialTimer.getTime() > 0: # run trial while timer is positive
             SeleSt_run.runTrial(exp,stimuli,thisTrial,trialStimuli,trialTimer)
             if stopTimer.getTime() <= 0: # present stop signal when stop timer reaches 0
                 SeleSt_run.stop_signal(exp,stimuli,thisTrial,trialStimuli)
-            exp.win.flip() # update stimuli on every frame
-        SeleSt_run.getRT(exp, thisTrial) # get RTs for current trial
+            if frameTimer.getTime() < 0:
+                exp.win.flip() # update stimuli on every frame
+                frameTimer.reset()
+        SeleSt_run.getRT(exp, thisTrial, trialStimuli) # get RTs for current trial
         SeleSt_run.feedback(exp, stimuli, trialInfo, thisTrial, trialStimuli) # calculate response accuracy and present feedback
         SeleSt_run.staircaseSSD(exp, stopInfo, thisTrial) # staircase SSD if applicable
         SeleSt_run.saveData(exp, trialInfo, thisTrial, startTime) # save data from current trial
         SeleSt_run.ITI(exp) # run intertrial interval
-        SeleSt_run.endTrial(exp,stimuli) # remove stimuli from screen
+        SeleSt_run.endTrial(exp,stimuli, trialStimuli) # remove stimuli from screen
     SeleSt_run.endBlock(exp, trialInfo, thisBlockTrials) # calculate block score and present end-of-block feedback
-SeleSt_run.endTask(exp, stimuli) # end the task when all blocks have been completed
+SeleSt_run.endTask(exp, stimuli, trialStimuli) # end the task when all blocks have been completed
