@@ -51,6 +51,7 @@ def Block(exp,trialInfo):
             exp.win.flip()
             exp.rb.waitKeys(keyList=['space'])
     exp.practiceGo = False # go-only practice is complete
+    trialInfo.blockTrialCount = 0 # reset block trial count
     trialInfo.blockCount = trialInfo.blockCount + 1 # track block number
     print('Starting block %s'%(trialInfo.blockCount)) # print block number to console
     
@@ -99,6 +100,7 @@ class Initialize_trial:
 #   Here the parameters for the current trial are implemented
 class Start_Trial:
     def __init__(self,exp,stimuli,trialInfo,thisTrial,trial):
+        trialInfo.blockTrialCount = trialInfo.blockTrialCount + 1
         if exp.taskInfo['Import trials?'] == True and trialInfo.blockCount > 0: # use imported trial information if selected (additional variables to change trial-by-trial should be inserted below, e.g., L_targetTime & R_targetTime)
             exp.advSettings['Go color'] = trial['go_color']
             exp.advSettings['Stop color'] = trial['stop_color']
@@ -138,10 +140,10 @@ class Start_Trial:
         # Set draw status of stimuli based on choice option
         # NOTE: the draw options for choices can modified below
         # e.g., if you want to present stimuli by side (left two or right two stimuli) you can change draw status to [True,False,True,False] and [False,True,False,True] for each option (either by editing or adding below)
-        if trialInfo.choiceList[trialInfo.trialCount-1-(len(trialInfo.choiceList)*(trialInfo.blockCount-1))] == 1:
+        if trialInfo.choiceList[trialInfo.blockTrialCount-1] == 1:
             self.drawStatus = [True,True,False,False] # L_stim & R_stim
             self.cueList = [stimuli.L_cue, stimuli.R_cue]
-        elif trialInfo.choiceList[trialInfo.trialCount-1-(len(trialInfo.choiceList)*(trialInfo.blockCount-1))] == 2:
+        elif trialInfo.choiceList[trialInfo.blockTrialCount-1] == 2:
             self.drawStatus = [False,False,True,True] # L_stim2 & R_stim2
             self.cueList = [stimuli.L_cue2, stimuli.R_cue2]
         if exp.taskInfo['RT type'] == 'Simple': # use L_stim and R_stim if using simple RT
@@ -300,21 +302,21 @@ def getRT(exp,thisTrial,trialStimuli):
 def feedback(exp,stimuli,trialInfo,thisTrial,trialStimuli): 
     if exp.taskInfo['Paradigm'] == 'ARI': # use positional RTs if ARI paradigm (i.e., propn of filled bar to filling time)
         for i, stim in enumerate(trialStimuli.stimList): # loop over trial stimuli
-            if trialInfo.choiceList[trialInfo.trialCount-1-(len(trialInfo.choiceList)*(trialInfo.blockCount-1))] == 1: # if choice 1
+            if trialInfo.choiceList[trialInfo.blockTrialCount-1] == 1: # if choice 1
                 if i == 0:
                     L_RT = stim.size[1]/exp.advSettings['Stimulus size (cm)']*trialStimuli.fillTimes[i]*1000
                 if i == 1:
                     R_RT = stim.size[1]/exp.advSettings['Stimulus size (cm)']*trialStimuli.fillTimes[i]*1000
-            elif trialInfo.choiceList[trialInfo.trialCount-1-(len(trialInfo.choiceList)*(trialInfo.blockCount-1))] == 2: # if choice 2
+            elif trialInfo.choiceList[trialInfo.blockTrialCount-1] == 2: # if choice 2
                 if i == 2:
                     L_RT = stim.size[1]/exp.advSettings['Stimulus size (cm)']*trialStimuli.fillTimes[i]*1000
                 if i == 3:
                     R_RT = stim.size[1]/exp.advSettings['Stimulus size (cm)']*trialStimuli.fillTimes[i]*1000
     elif exp.taskInfo['Paradigm'] == 'SST': # use stored RTs if SST paradigm
-        if trialInfo.choiceList[trialInfo.trialCount-1-(len(trialInfo.choiceList)*(trialInfo.blockCount-1))] == 1: # if choice 1
+        if trialInfo.choiceList[trialInfo.blockTrialCount-1] == 1: # if choice 1
             L_RT = thisTrial.RTs[0]
             R_RT = thisTrial.RTs[1]
-        elif trialInfo.choiceList[trialInfo.trialCount-1-(len(trialInfo.choiceList)*(trialInfo.blockCount-1))] == 2: # if choice 2
+        elif trialInfo.choiceList[trialInfo.blockTrialCount-1] == 2: # if choice 2
             L_RT = thisTrial.RTs[2]
             R_RT = thisTrial.RTs[3]
     if L_RT == float("nan"): # temporarily set nans at -9999 for feedback purposes
@@ -376,7 +378,7 @@ def staircaseSSD(exp,stopInfo,thisTrial):
 def saveData(exp,trialInfo,thisTrial,startTime):
     if exp.taskInfo['Save data?'] == True: # save data if option is selected
         with open(exp.Output+'.txt', 'a') as b:
-            b.write('%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n'%(trialInfo.blockCount, trialInfo.trialCount, startTime, thisTrial.trialName, thisTrial.trialType, thisTrial.stopTime,thisTrial.L_targetTime, thisTrial.R_targetTime, trialInfo.choiceList[trialInfo.trialCount-1-(len(trialInfo.choiceList)*(trialInfo.blockCount-1))], thisTrial.pressState[0], thisTrial.pressState[1], thisTrial.pressState[2], thisTrial.pressState[3], thisTrial.RTs[0], thisTrial.RTs[1], thisTrial.RTs[2], thisTrial.RTs[3]))
+            b.write('%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n'%(trialInfo.blockCount, trialInfo.trialCount, startTime, thisTrial.trialName, thisTrial.trialType, thisTrial.stopTime,thisTrial.L_targetTime, thisTrial.R_targetTime, trialInfo.choiceList[trialInfo.blockTrialCount-1], thisTrial.pressState[0], thisTrial.pressState[1], thisTrial.pressState[2], thisTrial.pressState[3], thisTrial.RTs[0], thisTrial.RTs[1], thisTrial.RTs[2], thisTrial.RTs[3]))
 
 # Define ITI function
 #   Function for running intertrial interval

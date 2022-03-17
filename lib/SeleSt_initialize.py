@@ -210,16 +210,21 @@ class Experiment():
         # INSTRUCTIONS        
         # Load instructions depending on selected paradigm
         # Instructions can be modified by replacing the associated .png for each instruction (see SeleSt_intrusctions.ppt for instruction slides)
-        if self.taskInfo['Paradigm'] == 'ARI':
-            self.instr_1_go = visual.ImageStim(self.win, image=_thisDir+'/instructions/instr-1-go_ARI.png')
-            self.instr_2_points = visual.ImageStim(self.win, image=_thisDir+'/instructions/instr-2-points_ARI.png')
-            self.instr_3_stop = visual.ImageStim(self.win, image=_thisDir+'/instructions/instr-3-stop_ARI.png')
-        elif self.taskInfo['Paradigm'] == 'SST':
-            self.instr_1_go = visual.ImageStim(self.win, image=_thisDir+'/instructions/instr-1-go_SST.png')
-            self.instr_2_points = visual.ImageStim(self.win, image=_thisDir+'/instructions/instr-2-points_SST.png')
-            self.instr_3_stop = visual.ImageStim(self.win, image=_thisDir+'/instructions/instr-3-stop_SST.png')     
-        self.instr_4_task = visual.ImageStim(self.win, image=_thisDir+'/instructions/instr-4-task.png') 
-        self.instr_5_taskEnd = visual.ImageStim(self.win, image=_thisDir+'/instructions/instr-5-taskEnd.png')                       
+        if self.taskInfo['Paradigm'] == 'ARI' and self.taskInfo['RT type'] == 'Simple':
+            instrDir = _thisDir+'/instructions/ARI_simple/'
+        if self.taskInfo['Paradigm'] == 'SST' and self.taskInfo['RT type'] == 'Simple':
+            instrDir = _thisDir+'/instructions/SST_simple/'
+        if self.taskInfo['Paradigm'] == 'ARI' and self.taskInfo['RT type'] == 'Choice':
+            instrDir = _thisDir+'/instructions/ARI_choice/'
+        if self.taskInfo['Paradigm'] == 'SST' and self.taskInfo['RT type'] == 'Choice':
+            instrDir = _thisDir+'/instructions/SST_choice/'
+        
+        self.instr_1_go = visual.ImageStim(self.win, image=instrDir+'go_practice_1.png')
+        self.instr_2_points = visual.ImageStim(self.win, image=instrDir+'go_practice_2.png')
+        self.instr_3_stop = visual.ImageStim(self.win, image=instrDir+'stop_practice.png')
+        self.instr_4_task = visual.ImageStim(self.win, image=_thisDir+'/instructions/preTask.png')
+        self.instr_5_taskEnd = visual.ImageStim(self.win, image=_thisDir+'/instructions/endTask.png')
+                
         if self.taskInfo['Include practice?'] == True: # markers to keep track of practice if option is selected
             self.practiceGo = True
             self.practiceStop = True
@@ -285,7 +290,8 @@ class Trials:
         
         # Set up counters for block/trial number & scores
         self.blockCount = 0
-        self.trialCount = 0               
+        self.trialCount = 0
+        self.blockTrialCount = 0                  
         self.totalScore = 0
         self.blockScore = 0
         self.prevBlockScore = '-'
@@ -297,7 +303,7 @@ class Trials:
         if exp.taskInfo['Paradigm'] == 'ARI':
             self.targetRTs = [75, 50, 25] # ARI target RTs
         elif exp.taskInfo['Paradigm'] == 'SST':
-            self.targetRTs = [500, 400, 300] # SST target RTs
+            self.targetRTs = [600, 500, 400] # SST target RTs
  
 # Create SSD class
 #   Generates information for stop trials based on selected settings
