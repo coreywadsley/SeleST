@@ -18,7 +18,7 @@ Selective Stopping (SeleSt) task
 # import required modules
 import os
 from psychopy import core
-from lib import SeleSt_initialize, SeleSt_run
+from lib import SeleSt_initialize, SeleSt_run, SeleSt_analyze
 # ensure that the relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__)) 
 os.chdir(_thisDir)
@@ -26,7 +26,7 @@ os.chdir(_thisDir)
 #   INITIALIZE
 # Here we are initializing all of the information that can change across sessions 
     # additional info for each class can be found in the SeleSt_initialize script
-exp = SeleSt_initialize.Experiment(_thisDir) # initialize exp class
+exp = SeleSt_initialize.Experiment_pilot(_thisDir) # initialize exp class
 stimuli = SeleSt_initialize.Stimuli(exp) # initialize stimuli class 
 trialInfo = SeleSt_initialize.Trials(exp) # initialize trialInfo class
 stopInfo = SeleSt_initialize.SSD(exp) # initialize stopInfo class
@@ -50,14 +50,11 @@ for thisBlock in trialInfo.blockList: # iterate over blocks
         trialTimer = core.CountdownTimer(exp.advSettings['Trial length (s)']) # set trial timer
         stopTimer = core.CountdownTimer(thisTrial.stopTime/1000) # set stop timer
         exp.win.callOnFlip(exp.rb.clock.reset)
-        frameTimer = core.CountdownTimer((exp.frameDur/2)/1000)
         while trialTimer.getTime() > 0: # run trial while timer is positive
             SeleSt_run.runTrial(exp,stimuli,thisTrial,trialStimuli,trialTimer)
             if stopTimer.getTime() <= 0: # present stop signal when stop timer reaches 0
                 SeleSt_run.stop_signal(exp,stimuli,thisTrial,trialStimuli)
-            if frameTimer.getTime() < 0:
-                exp.win.flip() # update stimuli on every frame
-                frameTimer.reset()
+            exp.win.flip() # update stimuli on every frame
         SeleSt_run.getRT(exp, thisTrial, trialStimuli) # get RTs for current trial
         SeleSt_run.feedback(exp, stimuli, trialInfo, thisTrial, trialStimuli) # calculate response accuracy and present feedback
         SeleSt_run.staircaseSSD(exp, stopInfo, thisTrial) # staircase SSD if applicable
@@ -65,4 +62,5 @@ for thisBlock in trialInfo.blockList: # iterate over blocks
         SeleSt_run.ITI(exp) # run intertrial interval
         SeleSt_run.endTrial(exp,stimuli, trialStimuli) # remove stimuli from screen
     SeleSt_run.endBlock(exp, trialInfo, thisBlockTrials) # calculate block score and present end-of-block feedback
+SeleSt_analyze.standard(_thisDir,exp)
 SeleSt_run.endTask(exp, stimuli, trialStimuli) # end the task when all blocks have been completed
