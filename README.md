@@ -3,6 +3,7 @@
 Welcome! SeleSt is an open-source response inhibition task created using Python-integrated PsychoPy software.The task allows response inhibition to be assessed in nonselective and selective stopping contexts, via 1 or 2-choice stop-signal and anticipatory response inhibition paradigms. The key motivation of SeleSt was to create an open-source task with flexible parameters to facilitate investigations of response inhibition across a variety of going and stopping contexts.
 
 Developed by Corey Wadsley* with help from Fenwick Nolan.
+
 *Movement Neuroscience Laboratory, Department of Exercise Sciences, The University of Auckland
 
 NOTE: This is a beta version of the task. Watch this space for an official release!
