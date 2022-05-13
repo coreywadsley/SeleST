@@ -15,6 +15,8 @@ NOTE: This is a beta version of the task. Watch this space for an official relea
     
 Wadsley, C. G., Cirillo, J., Nieuwenhuys, A., & Byblow, W. D. (2022). Stopping interference in response inhibition: Behavioral and neural signatures of selective stopping. J Neurosci, 42(2), 156-165. DOI: 10.1523/JNEUROSCI.0668-21.2021 
 
+- Feel free to direct questions or feedback to Corey's email (c.wadsley@auckland.ac.nz)
+
 **Installation:**
 - PsychoPy (https://psychopy.org/) is required to run SeleSt. PsychoPy can be installed standalone or within a Python IDE (e.g., Spyder). Instructions for installation can be found on the PsychoPy website. Once installed, the task can be run using the 'SeleSt.py' file
 
