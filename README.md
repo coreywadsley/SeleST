@@ -22,4 +22,4 @@ Wadsley, C. G., Cirillo, J., Nieuwenhuys, A., & Byblow, W. D. (2022). Stopping i
 
 **Current to do:**
 - Create instructions (SeleSt_guide)
-- Integrate automated analysis scripts
+- Bug test
