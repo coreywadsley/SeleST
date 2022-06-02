@@ -26,7 +26,7 @@ os.chdir(_thisDir)
 #   INITIALIZE
 # Here we are initializing all of the information that can change across sessions 
     # additional info for each class can be found in the SeleSt_initialize script
-exp = SeleSt_initialize.Experiment_pilot(_thisDir) # initialize exp class
+exp = SeleSt_initialize.Experiment(_thisDir) # initialize exp class
 stimuli = SeleSt_initialize.Stimuli(exp) # initialize stimuli class 
 trialInfo = SeleSt_initialize.Trials(exp) # initialize trialInfo class
 stopInfo = SeleSt_initialize.SSD(exp) # initialize stopInfo class
