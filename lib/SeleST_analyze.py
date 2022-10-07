@@ -1,5 +1,5 @@
 """
-Selective Stopping (SeleSt) analysis
+Selective Stopping Toolbox (SeleST) analysis
 
 """
 import pandas as pd
@@ -129,9 +129,9 @@ def standard(_thisDir, exp):
         elif i == 2:
             aveData[trialLbls[i]+'_'+'CI'] = round(np.mean(d.loc[d['stop_success']==0].SI))
 
-    file = _thisDir + os.sep + 'data/SeleSt_%s' % (exp.taskInfo['Participant ID']) + '_processed.csv'
+    file = _thisDir + os.sep + 'data/SeleST_%s' % (exp.taskInfo['Participant ID']) + '_processed.csv'
     data.to_csv(file,index=False)
-    file = _thisDir + os.sep + 'data/SeleSt_%s' % (exp.taskInfo['Participant ID']) + '_averages.csv'
+    file = _thisDir + os.sep + 'data/SeleST_%s' % (exp.taskInfo['Participant ID']) + '_averages.csv'
     aveData.to_csv(file,index=False)
 
     return aveData
