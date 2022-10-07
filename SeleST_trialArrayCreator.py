@@ -1,10 +1,9 @@
 """
-Selective Stopping (SeleSt) task - Trial Array Creator
+Selective Stopping Toolbox (SeleST) - Trial Array Creator
 
     Written by Fenwick Nolan with help from Corey Wadsley
 
-    Script used to generate trials files that can be imported into SeleSt. Intructions for
-    use can be found in SeleSt_guide.pdf or by following the comments in the script.
+    Script used to generate trials files that can be imported into SeleST.
     
     We recommend creating a new file when modifying this script.     
 """
@@ -40,7 +39,7 @@ forceGoStart = True # make sure every block starts with x number of go trials
 n_forcedGo = 3 # set this to the number of go trials you would like at the start of every block
 
 # Here we are setting the number of blocks we would like to create (generated from the trial information below)
-# NOTE: the number set in taskInfo from SeleSt_initialise.Experiment needs to match the number below
+# NOTE: the number set in taskInfo from SeleST_initialise.Experiment needs to match the number below
 n_blocks = 12
 
 #---------------------------------------------------------------------------
@@ -60,7 +59,7 @@ n_blocks = 12
     # n_repeats: number of times to repeat the trial type per block
     # trialName: here you can label the trial type (e.g., 'go_TMS')
     # trialType: here we set the trial type (1 = Go, 2 = stop-both, 3 = stop-left, 4 = stop-right)
-    # ssd: here we are assigning a trialType a stop-signal delay to use from stopTimeArray in SeleSt_initialize.SSD
+    # ssd: here we are assigning a trialType a stop-signal delay to use from stopTimeArray in SeleST_initialize.SSD
     # stop_color: colour of the stop signal
     # L_cue_color: colour of the L cue
     # R_cue_color: colour of the R cue
@@ -68,7 +67,7 @@ n_blocks = 12
     # R_targetTime: same as above for R response
 
 # Additional variables (e.g., L_targetTime & R_targetTime) can easily be included by inserting an additional 
-# variable to the dictionary and adding the variable to SeleSt_run.Start_trial
+# variable to the dictionary and adding the variable to SeleST_run.Start_trial
 
 # Create an empty dataframe with relevant variables
 # NOTE: column names should match the names within the trialList dictionaries
