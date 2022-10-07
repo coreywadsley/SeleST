@@ -1,10 +1,10 @@
 """
-Selective Stopping (SeleSt) task
+Selective Stopping Toolbox (SeleST)
 
-    SeleSt_run
+    SeleST_run
         Functions to run the task can be found in this script
         
-    See the SeleSt.py script for general information on the task
+    See the SeleST.py script for general information on the task
 """
 
 # Import required modules
