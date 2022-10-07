@@ -1,10 +1,10 @@
 """
-Selective Stopping (SeleSt) task
+Selective Stopping Toolbox (SeleST)
 
-    SeleSt_initialize
+    SeleST_initialize
         Information that can change from session to session is initialized in this script
         
-    See the SeleSt.py script for general information on the task
+    See the SeleST.py script for general information on the task
 """
 
 # Import required modules
@@ -20,7 +20,7 @@ import json
 #   Contains both general and advanced settings in dictionaries that are presented in GUIs.
 #   A tool tip for each option is accessible by hovering the mouse over the input area.
 #   You can make changes to the default values by altering the code below, or by creating a specific Experiment class
-#   that is called in SeleSt.py, e.g., Experiment_debug.
+#   that is called in SeleST.py, e.g., Experiment_debug.
 class Experiment():
     def __init__(self,_thisDir):        
         # Create dictionary with general task information (this dictionary will be exported to a .txt file if save data is selected)
@@ -40,7 +40,7 @@ class Experiment():
             'File path': _thisDir + os.sep + 'conditions', # file path to folder containing trials file to import
             'File name': 'example_trials_1.csv', # name of the file to import
             'Change general settings?': False} # option to change general settings via GUI
-        dlg=gui.DlgFromDict(dictionary=self.taskInfo, title='SeleSt', # Create GUI for taskInfo dictionary w/ tool tips
+        dlg=gui.DlgFromDict(dictionary=self.taskInfo, title='SeleST', # Create GUI for taskInfo dictionary w/ tool tips
             order = ('Experiment name', 'Participant ID', 'Age (years)', 'Sex', 'Handedness', 'Paradigm', 'Response mode', 'RT type', 'Include practice?', 'Save data?', 'Import trials?', 'File path', 'File name', 'Change general settings?'),
             tip={'Experiment name': 'Input name of experiment which will included in data file name',
                  'Participant ID': 'Input ID of participant that will be included in data file name',
@@ -72,7 +72,7 @@ class Experiment():
             'Stop-signal delay step-size (ms)': 50, # step size to change stop-signal delay by if staircasing is enabled
             'Change advanced settings?':False} # option to change advanced settings via GUI              
         if self.taskInfo['Change general settings?']:
-            dlg=gui.DlgFromDict(dictionary=self.genSettings, title='SeleSt (general settings)', # Create GUI for expInfo dictionary w/ tool tips
+            dlg=gui.DlgFromDict(dictionary=self.genSettings, title='SeleST (general settings)', # Create GUI for expInfo dictionary w/ tool tips
                 order = ('Monitor name', 'Full-screen?', 'Screen', 'Use response box?', 'Trial-by-trial feedback?', 'n practice go trials', 'n go trials per block', 'n stop-both trials per block', 'n stop-left trials per block', 'n stop-right trials per block', 'n blocks', 'n forced go trials', 'Staircase stop-signal delays?', 'Stop-signal delay step-size (ms)', 'Change advanced settings?'),
                 tip = {
                      'Monitor name': 'Input name of the monitor being used to present the task (see Monitor Centre for more info)',
@@ -121,7 +121,7 @@ class Experiment():
             'Background color': 'grey' # colour of background
             }        
         if self.genSettings['Change advanced settings?']:
-            dlg=gui.DlgFromDict(dictionary=self.advSettings, title='SeleSt (Advanced settings)', # Create GUI for advExpInfo dictionary if advanced option was selected
+            dlg=gui.DlgFromDict(dictionary=self.advSettings, title='SeleST (Advanced settings)', # Create GUI for advExpInfo dictionary if advanced option was selected
                 order = ('Send serial trigger at trial onset?', 'Left response key', 'Right response key', 'Left 2 response key', 'Right 2 response key', 'Target time (ms)', 'Trial length (s)', 'Intertrial interval (s)', 'Fixed delay?', 'Variable delay lower limit (s)', 'Variable delay upper limit (s)', 'Fixed delay length (s)', 'Stop-both time (ms)', 'Stop-left time (ms)', 'Stop-right time (ms)', 'Lower stop-limit (ms)', 'Upper stop-limit (ms)', 'Positional stop signal', 'Target position', 'Stimulus size (cm)', 'Stimulus width (cm)', 'Background color', 'Cue color', 'Go color', 'Stop color'),
                 tip = {
                      'Send serial trigger at trial onset?': 'Select this if you would like to send a trigger at trial onset (NOTE: a serial device must be set up for this to work)',
@@ -198,18 +198,18 @@ class Experiment():
             print('Data folder did not exist, making one in current directory')
             os.makedirs(_thisDir + os.sep +'data/')
         if self.taskInfo['Save data?'] == True: # only save if option is selected
-            self.Output = _thisDir + os.sep + u'data/SeleSt_%s_%s_%s' % (self.taskInfo['Participant ID'],
+            self.Output = _thisDir + os.sep + u'data/SeleST_%s_%s_%s' % (self.taskInfo['Participant ID'],
                 self.taskInfo['Experiment name'], self.taskInfo['date']) # create output file to store behavioural data
             with open(self.Output+'.txt', 'a') as b: # create file w/ headers
                 b.write('block trial startTime trialName trialType stopTime L_targetTime R_targetTime Choice L_press R_press L2_press R2_press L_RT R_RT L2_RT R2_RT\n')
-            taskInfo_output = _thisDir + os.sep + u'data/SeleSt_%s_%s_%s_taskInfo.txt' % (self.taskInfo['Participant ID'],
+            taskInfo_output = _thisDir + os.sep + u'data/SeleST_%s_%s_%s_taskInfo.txt' % (self.taskInfo['Participant ID'],
                 self.taskInfo['Experiment name'], self.taskInfo['date']) # create output file to store taskInfo dictionary                       
             with open(taskInfo_output, 'w') as convert_file:
                  convert_file.write(json.dumps(self.taskInfo)) # save taskInfo dictionary            
 
         # INSTRUCTIONS        
         # Load instructions depending on selected paradigm
-        # Instructions can be modified by replacing the associated .png for each instruction (see SeleSt_intrusctions.ppt for instruction slides)
+        # Instructions can be modified by replacing the associated .png for each instruction (see SeleST_intrusctions.ppt for instruction slides)
         if self.taskInfo['Paradigm'] == 'ARI' and self.taskInfo['RT type'] == 'Simple':
             instrDir = _thisDir+'/instructions/ARI_simple/'
         if self.taskInfo['Paradigm'] == 'SST' and self.taskInfo['RT type'] == 'Simple':
