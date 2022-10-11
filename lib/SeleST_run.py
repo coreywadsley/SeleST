@@ -26,10 +26,10 @@ def Block(exp,trialInfo):
             if sum(thisBlockTrials[:exp.genSettings['n forced go trials']]) > exp.genSettings['n forced go trials']: # reshuffle trials if n forced go criterion is not met
                 thisBlockTrials = shuffle(thisBlockTrials)
             elif sum(thisBlockTrials[:exp.genSettings['n forced go trials']]) <= exp.genSettings['n forced go trials']: # break loop if n forced go criterion is achieved
-                break  
-        shuffle(trialInfo.choiceList) # shuffle choice list
+                break         
     elif exp.taskInfo['Import trials?'] == True: # use imported trials if option is selected
         thisBlockTrials = trialInfo.blockTrials[trialInfo.blockCount] # start from 0 to account for zero-based array index
+    shuffle(trialInfo.choiceList) # shuffle choice list
     # Add instructions for practice go-only and go/stop blocks if practice is enabled            
     if exp.taskInfo['Include practice?'] == True:
         if exp.practiceGo == True: # practice go (coded as block -1 in data file)
