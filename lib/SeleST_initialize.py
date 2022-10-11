@@ -278,10 +278,10 @@ class Trials:
             nStopLeftTrials = [3] * exp.genSettings['n stop-left trials per block']
             nStopRightTrials = [4] * exp.genSettings['n stop-right trials per block']
             self.trialList = nGoTrials + nStopBothTrials + nStopLeftTrials + nStopRightTrials
-            if exp.taskInfo['RT type'] == 'Simple':
-                self.choiceList = int(len(self.trialList))*[1]
-            elif exp.taskInfo['RT type'] == 'Choice':
-                self.choiceList = int(len(self.trialList)/2)*[1] + int(len(self.trialList)/2)*[2]
+        if exp.taskInfo['RT type'] == 'Simple':
+            self.choiceList = int(len(self.trialList))*[1]
+        elif exp.taskInfo['RT type'] == 'Choice':
+            self.choiceList = int(len(self.trialList)/2)*[1] + int(len(self.trialList)/2)*[2]
             
         # Insert practice routine if option is selected
         if exp.taskInfo['Include practice?'] == True:
