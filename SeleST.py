@@ -62,5 +62,4 @@ for thisBlock in trialInfo.blockList: # iterate over blocks
         SeleST_run.ITI(exp) # run intertrial interval
         SeleST_run.endTrial(exp,stimuli, trialStimuli) # remove stimuli from screen
     SeleST_run.endBlock(exp, trialInfo, thisBlockTrials) # calculate block score and present end-of-block feedback
-SeleST_analyze.standard(_thisDir,exp)
 SeleST_run.endTask(exp, stimuli, trialStimuli) # end the task when all blocks have been completed
