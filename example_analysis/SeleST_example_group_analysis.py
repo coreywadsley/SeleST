@@ -1,5 +1,6 @@
 """
-Selective Stopping (SeleSt) analysis
+Example Selective Stopping Toolbox (SeleST) analysis
+    Used when comparing performance between anticipatory and stop-signal task variants
 
 """
 
@@ -8,12 +9,13 @@ import numpy as np
 import os
 from scipy.stats import median_abs_deviation
 
-datafolder = '//files.auckland.ac.nz/research/ressci202100059-RI-Byblow/Corey-SeleSt/analysis'
-parInfo = pd.read_csv(datafolder+'/SeleSt_averages.csv')
+datafolder = os.path.dirname(os.path.realpath(__file__))
+parInfo = pd.read_csv(datafolder+'\\ex_participantInfo.csv')
 
-n_participants = 40
+n_participants = 1
 participants = list(range(1,n_participants+1)) # create list of n participants
 paradigms = ['ARI', 'SST'] # create list of paradigms
+parCode = 'ex' # create dummy fileprefix for example
 
 # Initialise list of DVs
 avedata = {
@@ -63,7 +65,7 @@ for idx, part in enumerate(participants):
         avedata['order'].append(parInfo['order'][idx])
         
         # load data
-        data = pd.read_csv(datafolder+'/raw_data/'+str(part)+'_'+paradigms[p]+'.txt', delimiter=' ')
+        data = pd.read_csv(datafolder+'\\'+str(parCode)+'_'+paradigms[p]+'.txt', delimiter=' ') # NOTE: parCode should be changed to part for iterative analysis
         
         # set up processing variables
         data['go_success'] = 0 # create column for go success
@@ -189,20 +191,5 @@ for idx, part in enumerate(participants):
         
 # save data
 avedata = pd.DataFrame(avedata)
-file = datafolder + '/clean_analysis/SeleSt_group_data_long.csv'
+file = datafolder + '\\SeleSt_group_data.csv'
 avedata.to_csv(file,index=False)
-pivoted = avedata.pivot(index="participant", columns=["paradigm"])
-pivoted.columns = ['_'.join(str(s).strip() for s in col if s) for col in pivoted.columns]
-pivoted.reset_index(inplace=True)
-file = datafolder + '/clean_analysis/SeleSt_group_data.csv'
-pivoted.to_csv(file,index=False)
-sdata.to_csv(datafolder + '/clean_analysis/SeleSt_SI_trialdata.csv', index=False)
- 
-    
- 
-    
- 
-    
- 
-    
-                    
