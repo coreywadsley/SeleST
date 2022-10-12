@@ -18,7 +18,7 @@ Selective Stopping Toolbox (SeleST)
 # import required modules
 import os
 from psychopy import core
-from lib import SeleST_initialize, SeleST_run, SeleST_analyze
+from lib import SeleST_initialize, SeleST_run
 # ensure that the relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__)) 
 os.chdir(_thisDir)
