@@ -7,8 +7,8 @@ Selective Stopping Toolbox (SeleST)
         https://github.com/coreywadsley/SeleST
     
     If you use this task, please cite:
-        Wadsley, Cirillo, Nieuwenhuys, & Byblow. (2022). Stopping interference in response inhibition: Behavioral
-        and neural signatures of selective stopping. J Neurosci 42(2), 156-165. doi: 10.1523/JNEUROSCI.0668-21.2021
+    Wadsley, C. G., Cirillo, J., Nieuwenhuys, A., & Byblow, W. D. (2022). Comparing anticipatory and stop-signal 
+    response inhibition with a novel, open-source selective stopping toolbox, PsyArXiv. DOI: 10.31234/osf.io/gtda6
 
     If you have any issues, feel free to contact Corey at:
         c.wadsley@auckland.ac.nz
