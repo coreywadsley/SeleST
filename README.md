@@ -10,7 +10,7 @@ Welcome! The Selective Stopping Toolbox (SeleST) allows response inhibition to b
 
 An overview and recommendations for use of SeleST is provided in the following article - please cite it if you make use of SeleST.
 
-xxx
+- Wadsley, C. G., Cirillo, J., Nieuwenhuys, A., & Byblow, W. D. (2022, October 12). Comparing anticipatory and stop-signal response inhibition with a novel, open-source selective stopping toolbox. [https://doi.org/10.31234/osf.io/gtda6](https://doi.org/10.31234/osf.io/gtda6)
 
 - For a review of selective stopping, see [Wadsley et al., 2022, _J Neurosci_](https://doi.org/10.1523/JNEUROSCI.0668-21.2021)
 
