@@ -20,7 +20,7 @@ xxx
 
 ## General information
 
-- [PsychoPy](https://psychopy.org/) is required for SeleST. PsychoPy can be installed standalone or within a Python IDE (e.g., Spyder). Instructions for installation can be found on the PsychoPy website. Once installed, the task can be run using the 'SeleST.py' file.
+- [PsychoPy](https://psychopy.org/) is required for SeleST. PsychoPy can be installed standalone or within a Python IDE (e.g., Spyder). Instructions for installation can be found on the PsychoPy website. Once PsychoPy is installed, SeleST can be downloaded and unzipped to a desired directory on your device. SeleST is run using the 'SeleST.py' file.
 
 - SeleST makes use of the object-oriented basis of Python. Most parameters can be modified using a graphical user interface (GUI) presented whenever SeleST is run (***A***). Advanced settings can be set through subsequent GUIs by selecting the ‘Change general settings?’ option. Advanced users can also insert modified versions of the various functions that handle specific aspects of the task. The default options of SeleST support use of simple or choice variants of multicomponent SST and ARI pardigms (***B***).
 
