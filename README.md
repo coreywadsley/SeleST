@@ -32,4 +32,4 @@ xxx
 
 ### Status updates
 
-- Preparing for initial release
+- The SeleST pre-print manuscript is currently under review. Feedback on SeleST is welcome at this time!
