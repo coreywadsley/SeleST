@@ -54,13 +54,20 @@ class Experiment():
                  'Change general settings?': 'Select this if you would like to change general settings of the task'})
         if dlg.OK == False: core.quit()
         self.taskInfo['date'] = data.getDateStr() # add timestamp (will be included in data filename)
-        # Create dictionary with general task settings        
+        # Create dictionary with general task settings      
+        if self.taskInfo['Paradigm'] == 'ARI': # default settings for ARI
+            genDefaults = {'Low feedback RT': 75, 'Mid feedback RT': 50, 'High feedback RT': 25}
+        elif self.taskInfo['Paradigm'] == 'SST': # default settings for SST
+            genDefaults = {'Low feedback RT': 600, 'Mid feedback RT': 500, 'High feedback RT': 400}
         self.genSettings = {
             'Monitor name': 'testMonitor', # name of monitor (see https://www.psychopy.org/builder/builderMonitors.html for more info)
             'Full-screen?': True, # option to run task in full-screen or borderless window
             'Screen': 0, # screen to use (0 = primary display)
             'Use response box?': False, # option to enable external response box
             'Trial-by-trial feedback?': True, # option to present trial-by-trial feedback
+            'Low feedback RT': genDefaults['Low feedback RT'], # option to set RT bands for feedback
+            'Mid feedback RT': genDefaults['Mid feedback RT'],
+            'High feedback RT': genDefaults['High feedback RT'],
             'n practice go trials': 36, # number of go trials to include in practice go-only block
             'n go trials per block': 24,
             'n stop-both trials per block': 4,
@@ -73,15 +80,15 @@ class Experiment():
             'Change advanced settings?':False} # option to change advanced settings via GUI              
         if self.taskInfo['Change general settings?']:
             dlg=gui.DlgFromDict(dictionary=self.genSettings, title='SeleST (general settings)', # Create GUI for expInfo dictionary w/ tool tips
-                order = ('Monitor name', 'Full-screen?', 'Screen', 'Use response box?', 'Trial-by-trial feedback?', 'n practice go trials', 'n go trials per block', 'n stop-both trials per block', 'n stop-left trials per block', 'n stop-right trials per block', 'n blocks', 'n forced go trials', 'Staircase stop-signal delays?', 'Stop-signal delay step-size (ms)', 'Change advanced settings?'),
+                order = ('Monitor name', 'Full-screen?', 'Screen', 'Use response box?', 'Trial-by-trial feedback?', 'Low feedback RT', 'Mid feedback RT', 'High feedback RT', 'n practice go trials', 'n go trials per block', 'n stop-both trials per block', 'n stop-left trials per block', 'n stop-right trials per block', 'n blocks', 'n forced go trials', 'Staircase stop-signal delays?', 'Stop-signal delay step-size (ms)', 'Change advanced settings?'),
                 tip = {
                      'Monitor name': 'Input name of the monitor being used to present the task (see Monitor Centre for more info)',
                      'Full-screen?': 'Select this if you would like to run the task in full-screen mode (recommended for data collection)',
                      'Screen': 'Screen to use (0 is primary display, 1 is second display etc)',
                      'Use response box?': 'Select this if you would like to use an external response box',
-                     'Trial-by-trial feedback?': 'Select this if you would like to present trial-by-trial feedback',
+                     'Trial-by-trial feedback?': 'Select this if you would like to present trial-by-trial feedback.\nYou can modify low, mid and high feedback ranges below.\nFeedback RT ranges are based on RT relative to target for ARI (the closer the better) and speed of RT for SST (the faster the better)',
                      'n practice go trials': 'Number of go trials to include in practice go-only block',
-                     'n blocks': 'Set the number of blocks to repeat the trials across (NOTE: if importing trials the number of trials will be divided by n blocks; e.g., 100 trials, 10 blocks = 10 blocks x 10 trials)',
+                     'n blocks': 'Set the number of blocks to repeat the trials across\n(NOTE: if importing trials the number of trials will be divided by n blocks; e.g., 100 trials, 10 blocks = 10 blocks x 10 trials)',
                      'n forced go trials': 'Input the number of go trials you would like to force at the start of each block',
                      'Staircase stop-signal delays?': 'Select this to staircase stop-signal delays to achieve a 50% stopping success for each stop trial type',
                      'Stop-signal delay step-size (ms)': 'Enter size to increase/decrease stop-signal delay during staircasing',
@@ -124,21 +131,21 @@ class Experiment():
             dlg=gui.DlgFromDict(dictionary=self.advSettings, title='SeleST (Advanced settings)', # Create GUI for advExpInfo dictionary if advanced option was selected
                 order = ('Send serial trigger at trial onset?', 'Left response key', 'Right response key', 'Left 2 response key', 'Right 2 response key', 'Target time (ms)', 'Trial length (s)', 'Intertrial interval (s)', 'Fixed delay?', 'Variable delay lower limit (s)', 'Variable delay upper limit (s)', 'Fixed delay length (s)', 'Stop-both time (ms)', 'Stop-left time (ms)', 'Stop-right time (ms)', 'Lower stop-limit (ms)', 'Upper stop-limit (ms)', 'Positional stop signal', 'Target position', 'Stimulus size (cm)', 'Stimulus width (cm)', 'Background color', 'Cue color', 'Go color', 'Stop color'),
                 tip = {
-                     'Send serial trigger at trial onset?': 'Select this if you would like to send a trigger at trial onset (NOTE: a serial device must be set up for this to work)',
-                     'Target time (ms)': 'Input the desired target response time (NOTE: keep in mind that trial length needs to be adjusted to allow for complete filling if target time is extended too far)',
-                     'Trial length (s)': 'Input desired trial length (NOTE FOR ARI: this should be at least the length of total time it takes for both bars to fill)',
+                     'Send serial trigger at trial onset?': 'Select this if you would like to send a trigger at trial onset\n(NOTE: a serial device must be set up for this to work)',
+                     'Target time (ms)': 'Input the desired target response time\n(NOTE: keep in mind that trial length needs to be adjusted to allow for complete filling if target time is extended too far)',
+                     'Trial length (s)': 'Input desired trial length\n(NOTE FOR ARI: this should be at least the length of total time it takes for both bars to fill)',
                      'Intertrial interval (s)': 'Input the desired intertrial interval (ITI)',
-                     'Fixed rise delay?': 'If selected, each trial will begin with a fixed rise delay (length below). If unselected, each trial will begin with a variable rise delay (ARI: 500 - 1000 ms, SST: 1000 - 2000 ms).',
+                     'Fixed rise delay?': 'If selected, each trial will begin with a fixed rise delay (length below).\nIf unselected, each trial will begin with a variable rise delay (ARI: 500 - 1000 ms, SST: 1000 - 2000 ms).',
                      'Fixed delay length (s)': 'Length of fixed delay (if selected) you would like to use at the start of each trial',
                      'Lower stop-limit (ms)': 'Time relative to trial onset that the bars should not stop before',
-                     'Upper stop-limit (ms)': 'Time relative to target time that the bars should not stop after (e.g. 800 ms target, 150 ms upper stop-limit = 650 ms stopping limit)',
+                     'Upper stop-limit (ms)': 'Time relative to target time that the bars should not stop after\n(e.g. 800 ms target, 150 ms upper stop-limit = 650 ms stopping limit)',
                      'Positional stop signal': 'ARI ONLY: Present stop signal as cessation of rising bars, if not, change color of filling bar',
                      'Stimulus size (cm)': 'Size of the left and right stimuli (ARI = height of bars, SST = height of triangles)',
-                     'Target position': 'ARI ONLY: Input where you would like the target lines to be positioned as proportion of total bar height (e.g. 0.8 equates to 80% of bar height/filling time)',
+                     'Target position': 'ARI ONLY: Input where you would like the target lines to be positioned as proportion of total bar height\n(e.g. 0.8 equates to 80% of bar height/filling time)',
                      'Cue color': 'Input name of desired color of the cue (ARI = target lines, SST = triangle outline)',
                      'Go color': 'Input name of desired color of the go signal (ARI = filling bar, SST = triangle filling)',
                      'Stop color': 'Input name of desired color of the stop signal (ARI = filling bar, SST = triangle filling)',
-                     'Background color': 'Input name of desired color of the background (for list of possible colors see https://www.w3schools.com/Colors/colors_names.asp )'})
+                     'Background color': 'Input name of desired color of the background\n(for list of possible colors see https://www.w3schools.com/Colors/colors_names.asp )'})
         if dlg.OK==False: core.quit()
         
         # Set up the window in which we will present stimuli
@@ -300,10 +307,7 @@ class Trials:
         # Set bounds for target RTs / feedbacks (NOTE: order of arrays should stay as ascending order in terms of required accuracy)
         self.scores = [25, 50, 100] # no. of points
         self.feedbackColors = ['Orange', 'Yellow', 'Green'] # colour of feedback
-        if exp.taskInfo['Paradigm'] == 'ARI':
-            self.targetRTs = [75, 50, 25] # ARI target RTs
-        elif exp.taskInfo['Paradigm'] == 'SST':
-            self.targetRTs = [600, 500, 400] # SST target RTs
+        self.targetRTs = [exp.genSettings['Low feedback RT'], exp.genSettings['Mid feedback RT'], exp.genSettings['High feedback RT']] # target RTs
  
 # Create SSD class
 #   Generates information for stop trials based on selected settings
