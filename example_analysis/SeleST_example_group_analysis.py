@@ -184,7 +184,7 @@ for idx, part in enumerate(participants):
                 avedata[trialLbls[i]+'_'+'ssrt_assump'].append(1)
             else:
                 avedata[trialLbls[i]+'_'+'ssrt_assump'].append(0)
-            n = int(round(len(rt)*avedata[trialLbls[i]+'_'+'success'][idx*2+p]/100,0))
+            n = int(round(len(rt)*(1-(avedata[trialLbls[i]+'_'+'success'][idx*2+p]/100)),0))
             avedata[trialLbls[i]+'_'+'ssrt'].append(abs(rt['goRT'].iloc[n] - avedata[trialLbls[i]+'_'+'ssd'][idx*2+p]))
             if p == 0:
                 avedata[trialLbls[i]+'_'+'ssrt'][idx*2+p] = 800 - avedata[trialLbls[i]+'_'+'ssrt'][idx*2+p]
