@@ -8,9 +8,9 @@ ___
 
 Welcome! The Selective Stopping Toolbox (SeleST) allows response inhibition to be assessed in nonselective and selective stopping contexts with either stop-signal or anticipatory response inhibition paradigms. SeleST was developed using freely available Python-based PsychoPy software that provides high-quality stimulus and response timing.
 
-An overview and recommendations for use of SeleST is provided in the following article - please cite it if you make use of SeleST.
+An overview and recommendations for use of SeleST is provided in the following open-access article in *Experimental Brain Research* - please cite it if you make use of SeleST
 
-- Wadsley, C. G., Cirillo, J., Nieuwenhuys, A., & Byblow, W. D. (2022). Comparing anticipatory and stop-signal response inhibition with a novel, open-source selective stopping toolbox, *PsyArXiv*. [https://doi.org/10.31234/osf.io/gtda6](https://doi.org/10.31234/osf.io/gtda6)
+- Wadsley, C. G., Cirillo, J., Nieuwenhuys, A., & Byblow, W. D. (2023). Comparing anticipatory and stop-signal response inhibition with a novel, open-source selective stopping toolbox, *Exp Brain Res*. [https://doi.org/10.1007/s00221-022-06539-9](https://doi.org/10.1007/s00221-022-06539-9)
 
 - For a review of selective stopping, see [Wadsley et al., 2022, _J Neurosci_](https://doi.org/10.1523/JNEUROSCI.0668-21.2021)
 
@@ -30,6 +30,8 @@ An overview and recommendations for use of SeleST is provided in the following a
 
 ![SeleST_defaults](/instructions/SeleST_choiceTrialTypes.png)
 
+- Remember to always check stimulus and response timing with your own set up!
+
 ### Status updates
 
-- The SeleST pre-print manuscript is currently under review. Feedback on SeleST is welcome at this time!
+- SeleST article is now freely available in *Experimental Brain Research*. The repository will be updated based on community feedback.
