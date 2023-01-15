@@ -7,8 +7,8 @@ Selective Stopping Toolbox (SeleST)
         https://github.com/coreywadsley/SeleST
     
     If you use this task, please cite:
-    Wadsley, C. G., Cirillo, J., Nieuwenhuys, A., & Byblow, W. D. (2022). Comparing anticipatory and stop-signal 
-    response inhibition with a novel, open-source selective stopping toolbox, PsyArXiv. DOI: 10.31234/osf.io/gtda6
+    Wadsley, C. G., Cirillo, J., Nieuwenhuys, A., & Byblow, W. D. (2023). Comparing anticipatory and stop-signal 
+    response inhibition with a novel, open-source selective stopping toolbox, Exp Brain Res. DOI: 10.1007/s00221-022-06539-9
 
     If you have any issues, feel free to contact Corey at:
         c.wadsley@auckland.ac.nz
