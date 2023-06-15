@@ -1,8 +1,10 @@
 # Selective Stopping Toolbox (SeleST)
 
-Developed by Corey Wadsley<sup>1</sup> with help from Fenwick Nolan.
+Developed by Corey Wadsley<sup>1,2</sup> with help from Fenwick Nolan.
 
 <sup>1</sup>*Movement Neuroscience Laboratory, Department of Exercise Sciences, The University of Auckland*
+
+<sup>2</sup>*Action Control Laboratory, Department of Human Physiology, University of Oregon*
 
 ___
 
@@ -14,7 +16,7 @@ An overview and recommendations for use of SeleST is provided in the following o
 
 - For a review of selective stopping, see [Wadsley et al., 2022, _J Neurosci_](https://doi.org/10.1523/JNEUROSCI.0668-21.2021)
 
-- Feel free to direct questions or feedback to Corey's email (c.wadsley@auckland.ac.nz)
+- Feel free to direct questions or feedback to Corey's email (cwadsley@uoregon.edu)
 
 
 
