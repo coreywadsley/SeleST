@@ -1,7 +1,8 @@
 """
 Selective Stopping Toolbox (SeleST)
-    Written by Corey Wadsley* with help from Fenwick Nolan
+    Written by Corey Wadsley*,** with help from Fenwick Nolan
         *Movement Neuroscience Laboratory, Department of Exercise Sciences, The University of Auckland
+        **Action Control Laboratory, Department of Human Physiology, The University of Auckland
     
     Further information can be found at:
         https://github.com/coreywadsley/SeleST
@@ -11,7 +12,7 @@ Selective Stopping Toolbox (SeleST)
     response inhibition with a novel, open-source selective stopping toolbox, Exp Brain Res. DOI: 10.1007/s00221-022-06539-9
 
     If you have any issues, feel free to contact Corey at:
-        c.wadsley@auckland.ac.nz
+        cwadsley@uoregon.edu
 """
 
 # Some general housekeeping before we start
