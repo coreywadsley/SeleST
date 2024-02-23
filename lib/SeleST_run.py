@@ -30,7 +30,7 @@ def Block(exp,trialInfo):
     elif exp.taskInfo['Import trials?'] == True: # use imported trials if option is selected
         thisBlockTrials = trialInfo.blockTrials[trialInfo.blockCount] # start from 0 to account for zero-based array index
     shuffle(trialInfo.choiceList) # shuffle choice list
-    # Add instructions for practice go-only and go/stop blocks if practice is enabled            
+    # Add instructions for practice go-only and go/stop blocks if practice is enabled
     if exp.taskInfo['Include practice?'] == True:
         if exp.practiceGo == True: # practice go (coded as block -1 in data file)
             thisBlockTrials = exp.genSettings['n practice go trials'] * [1]
@@ -80,8 +80,8 @@ class Initialize_trial:
             if self.trialType == 4: # if stop-right
                 self.staircase = 3
                 self.trialName = 'Stop-right'
-        self.stopTime = stopInfo.stopTimeArray[self.staircase] # assign stoptime based on staircase     
-        self.stopSignal = True # flag whether to present stop signal           
+        self.stopTime = stopInfo.stopTimeArray[self.staircase] # assign stoptime based on staircase
+        self.stopSignal = True # flag whether to present stop signal
         
         # Reset dynamic parameters
         self.L_RT_array = [] # NOTE: arrays are set for each response key so multiple presses can be accounted for in a trial
@@ -106,7 +106,7 @@ class Start_Trial:
             exp.advSettings['Stop color'] = trial['stop_color']
             stimuli.L_cue.lineColor = trial['L_cue_color']
             stimuli.R_cue.lineColor = trial['R_cue_color']
-            # thisTrial.L_targetTime = trial['L_targetTime']
+            # thisTrial.L_targetTime = trial['L_targetTime'] # example custom variable to run a decoupling response inhibition experiment (e.g., Wadsley et al., 2022, J Neurphysiol, https://doi.org/10.1152/jn.00495.2021)
             # thisTrial.R_targetTime = trial['R_targetTime']
         else: # use GUI if not importing trials 
             stimuli.L_cue.lineColor = exp.advSettings['Cue color']
@@ -124,7 +124,7 @@ class Start_Trial:
                     self.R_fillLimit = 1
                 if thisTrial.trialType == 2: # if stop-both trial
                     self.L_fillLimit = thisTrial.stopTime / self.L_fillTime # compute ratio of stop time to fill time
-                    self.R_fillLimit = thisTrial.stopTime / self.L_fillTime # compute ratio of stop time to fill time            
+                    self.R_fillLimit = thisTrial.stopTime / self.L_fillTime # compute ratio of stop time to fill time
                 if thisTrial.trialType == 3: # if stop-left trial
                     self.L_fillLimit = thisTrial.stopTime / self.L_fillTime # compute ratio of stop time to fill time
                     self.R_fillLimit = 1
@@ -158,7 +158,7 @@ class Start_Trial:
 # Define fixationPeriod function
 #   Here the fixation period is generated and implemented. For hold-and-release version the keys need to
 #   held for as long as the fixation period.
-def fixationPeriod(exp,stimuli):
+def fixationPeriod(exp,stimuli,trialStimuli):
     if exp.advSettings['Fixed delay?'] == True: # use fixed rise delay if option is selection
         fixPeriod = exp.advSettings['Fixed delay length (s)']
     else:
@@ -178,7 +178,7 @@ def fixationPeriod(exp,stimuli):
                     elif (thisKey == exp.R_resp_key):
                         R_key = PRESSED 
                     elif thisKey in ['q', 'escape']: # flag for esc or q key to exit program
-                        endTask(exp,stimuli)
+                        endTask(exp,stimuli,trialStimuli)
                     exp.holdClock.reset() # reset timer to keep track of hold length
                 allKeys = exp.rb.getKeys(waitRelease = True) # track key presses
                 for thisKey in allKeys: # reset key press status if release is detected
@@ -200,13 +200,13 @@ def fixationPeriod(exp,stimuli):
 def runTrial(exp,stimuli,thisTrial,trialStimuli,trialTimer):
     # Set up keys to track for left and right responses based on task version (hold-and-release vs wait-and-press)
     if exp.taskInfo['Response mode'] == 'Hold-and-release' and exp.genSettings['Use response box?'] == False: 
-        allKeys = exp.rb.getKeys([exp.advSettings['Left response key'],exp.advSettings['Right response key'],'q','escape'], waitRelease = True)
-    elif exp.genSettings['Use response box?'] == True: #Uses input from response box
+        allKeys = exp.rb.getKeys([exp.advSettings['Left response key'],exp.advSettings['Right response key'], exp.advSettings['Left 2 response key'],exp.advSettings['Right 2 response key'],'q','escape'], waitRelease = True)
+    elif exp.genSettings['Use response box?'] == True: # use input from response box
         # E.g.
         # allKeys = rb.getKeys()
         pass
     else:
-        allKeys = exp.rb.getKeys([exp.advSettings['Left response key'],exp.advSettings['Right response key'], exp.advSettings['Left 2 response key'],exp.advSettings['Right 2 response key'], 'q','escape'], waitRelease = False) #Uses keyboard with key press
+        allKeys = exp.rb.getKeys([exp.advSettings['Left response key'],exp.advSettings['Right response key'], exp.advSettings['Left 2 response key'],exp.advSettings['Right 2 response key'], 'q','escape'], waitRelease = False) # use keyboard with key press
     # Monitor key presses during trial
     for thisKey in allKeys:
          if thisKey==exp.L_resp_key: # left response
@@ -237,7 +237,7 @@ def runTrial(exp,stimuli,thisTrial,trialStimuli,trialTimer):
              endTask(exp,stimuli,trialStimuli)
     
     # ARI
-    if exp.taskInfo['Paradigm'] == 'ARI': # draw filling bars for ARI paradigm   
+    if exp.taskInfo['Paradigm'] == 'ARI': # draw filling bars for ARI paradigm
         t = trialTimer.getTime() # grab time for current loop
         for i, stim in enumerate(trialStimuli.stimList): # loop over trial stimuli
             if trialStimuli.drawStatus[i] == True: # if stimuli should be updated
@@ -329,7 +329,7 @@ def feedback(exp,stimuli,trialInfo,thisTrial,trialStimuli):
         if i == 0: # for left side responses
             stim.lineColor = 'Red' # set default feedback to failed
             L_score = 0        
-            for f, fb in enumerate(trialInfo.targetRTs): # loop over target RTs  
+            for f, fb in enumerate(trialInfo.targetRTs): # loop over target RTs
                 if thisTrial.trialType == 1 or thisTrial.trialType == 4: # if go or stop-right
                     if abs(thisTrial.L_targetTime-L_RT) < trialInfo.targetRTs[f]:
                         L_score = trialInfo.scores[f] # assign score
@@ -353,7 +353,7 @@ def feedback(exp,stimuli,trialInfo,thisTrial,trialStimuli):
                         stim.lineColor = trialInfo.feedbackColors[2]    
                         thisTrial.stopSuccess = 1
     trialScore = L_score + R_score # calculate trial score
-    print('Trial score was %s'%(trialScore)) # print trialScore to console        
+    print('Trial score was %s'%(trialScore)) # print trialScore to console
     if exp.genSettings['Trial-by-trial feedback?'] == True: # draw feedback if option is selected
         exp.win.flip()    
         
@@ -381,23 +381,33 @@ def saveData(exp,trialInfo,thisTrial,startTime):
             b.write('%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n'%(trialInfo.blockCount, trialInfo.trialCount, startTime, thisTrial.trialName, thisTrial.trialType, thisTrial.stopTime,thisTrial.L_targetTime, thisTrial.R_targetTime, trialInfo.choiceList[trialInfo.blockTrialCount-1], thisTrial.pressState[0], thisTrial.pressState[1], thisTrial.pressState[2], thisTrial.pressState[3], thisTrial.RTs[0], thisTrial.RTs[1], thisTrial.RTs[2], thisTrial.RTs[3]))
 
 # Define ITI function
-#   Function for running intertrial interval
-def ITI(exp):
-    core.wait(exp.advSettings['Intertrial interval (s)'])
-
-# Define endTrial function
-#   Function for removing stimuli at the end of each trial
-def endTrial(exp,stimuli, trialStimuli):
-    for s in stimuli.eStimList:
-        s.setAutoDraw(False)
-    for s in trialStimuli.stimList:
-        s.setAutoDraw(False)
-    for s in trialStimuli.cueList:
-        s.lineColor = exp.advSettings['Cue color']
+#   Function for ending the trial and running intertrial interval 
+def ITI(exp, stimuli, trialStimuli):
+    if exp.genSettings['Trial-by-trial feedback?'] == True: # run feedback duration if trial-by-trial feedback is enabled
+        core.wait(exp.advSettings['Feedback duration (s)'])
+    if exp.advSettings['Blank intertrial interval?'] == True: # if blank ITI, remove stimuli and then wait
+        for s in stimuli.eStimList:
+            s.setAutoDraw(False)
+        for s in trialStimuli.stimList:
+            s.setAutoDraw(False)
+        for s in trialStimuli.cueList:
+            s.lineColor = exp.advSettings['Cue color']
+        exp.win.flip()
+        core.wait(exp.advSettings['Intertrial interval (s)'])
+    else: # if non-blank ITI, wait and then remove stimuli
+        core.wait(exp.advSettings['Intertrial interval (s)'])
+        for s in stimuli.eStimList:
+            s.setAutoDraw(False)
+        for s in trialStimuli.stimList:
+            s.setAutoDraw(False)
+        for s in trialStimuli.cueList:
+            s.lineColor = exp.advSettings['Cue color']
+        exp.win.flip()
         
 # Define endBlock function
 #   Function for presenting end-of-block feedback
-def endBlock(exp,trialInfo,thisBlockTrials):   
+def endBlock(exp,trialInfo,thisBlockTrials):
+    print('End of block %s'%trialInfo.blockCount)
     if trialInfo.blockCount > 0:
         trialInfo.totalScore = trialInfo.totalScore + trialInfo.blockScore # update total score    
         # Create text stimuli for feedback
@@ -428,8 +438,16 @@ def endBlock(exp,trialInfo,thisBlockTrials):
         trialInfo.prevBlockScore = trialInfo.blockScore
         trialInfo.blockScore = 0
     
+# Define endTask function
+#   Function for ending the task and closing relevant serial/com ports
 def endTask(exp, stimuli, trialStimuli):
-    endTrial(exp, stimuli, trialStimuli)
+    print('Ending task')
+    for s in stimuli.eStimList:
+        s.setAutoDraw(False)
+    for s in trialStimuli.stimList:
+        s.setAutoDraw(False)
+    for s in trialStimuli.cueList:
+        s.lineColor = exp.advSettings['Cue color']
     exp.instr_5_taskEnd.draw()
     exp.win.flip()
     exp.rb.waitKeys(keyList=['space'])
