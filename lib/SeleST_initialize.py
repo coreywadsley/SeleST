@@ -99,7 +99,7 @@ class Experiment():
         if self.taskInfo['Paradigm'] == 'ARI': # default settings for ARI
             Defaults = {'Target time (ms)': 800, 'Trial length (s)': 1.25, 'Variable delay lower limit (s)':0.5, 'Variable delay upper limit (s)': 1, 'Fixed delay length (s)': 0.5, 'Stop-both time (ms)': 600, 'Stop-left time (ms)': 550, 'Stop-right time (ms)': 550, 'Lower stop-limit (ms)': 150, 'Upper stop-limit (ms)': 50, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 15}
         elif self.taskInfo['Paradigm'] == 'SST': # default settings for SST
-            Defaults = {'Target time (ms)': 0, 'Trial length (s)': 1.25, 'Variable delay lower limit (s)':0.5, 'Variable delay upper limit (s)': 1, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 300, 'Stop-left time (ms)': 250, 'Stop-right time (ms)': 250, 'Lower stop-limit (ms)': 50, 'Upper stop-limit (ms)': -500, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
+            Defaults = {'Target time (ms)': 0, 'Trial length (s)': 1.25, 'Variable delay lower limit (s)':0.5, 'Variable delay upper limit (s)': 1, 'Fixed delay length (s)': 1, 'Stop-both time (ms)': 175, 'Stop-left time (ms)': 175, 'Stop-right time (ms)': 175, 'Lower stop-limit (ms)': 50, 'Upper stop-limit (ms)': -500, 'Positional stop signal': False, 'Target position': 0.8, 'Stimulus size (cm)': 5}        
         self.advSettings = {
             'Send serial trigger at trial onset?': False, # option to send serial trigger at trial onset (NOTE: a compatible serial device will need to be set up before this works)
             'Left response key': 'x', # response key for left stimulus
@@ -107,8 +107,10 @@ class Experiment():
             'Left 2 response key': 'z', # response key for left stimulus 2
             'Right 2 response key': 'm', # response key for right stimulus 2
             'Target time (ms)': Defaults['Target time (ms)'], # ARI ONLY: target time for responses
-            'Trial length (s)': Defaults['Trial length (s)'], # Length of trial
-            'Intertrial interval (s)': 1, # Length of intertrial interval
+            'Trial length (s)': Defaults['Trial length (s)'], # length of trial
+            'Feedback duration (s)': 0.5, # length of feedback period (NOTE: this time will NOT be included if trial-by-trial feedback is disabled)
+            'Intertrial interval (s)': 0.5, # length of intertrial interval
+            'Blank intertrial interval?': False, # whether to keep (True) or wipe (False) stimuli on screen during ITI
             'Fixed delay?': False, # option to use fixed start delay, if false, random uniform delay is used
             'Variable delay lower limit (s)': Defaults['Variable delay lower limit (s)'],
             'Variable delay upper limit (s)': Defaults['Variable delay upper limit (s)'],
@@ -129,12 +131,14 @@ class Experiment():
             }        
         if self.genSettings['Change advanced settings?']:
             dlg=gui.DlgFromDict(dictionary=self.advSettings, title='SeleST (Advanced settings)', # Create GUI for advExpInfo dictionary if advanced option was selected
-                order = ('Send serial trigger at trial onset?', 'Left response key', 'Right response key', 'Left 2 response key', 'Right 2 response key', 'Target time (ms)', 'Trial length (s)', 'Intertrial interval (s)', 'Fixed delay?', 'Variable delay lower limit (s)', 'Variable delay upper limit (s)', 'Fixed delay length (s)', 'Stop-both time (ms)', 'Stop-left time (ms)', 'Stop-right time (ms)', 'Lower stop-limit (ms)', 'Upper stop-limit (ms)', 'Positional stop signal', 'Target position', 'Stimulus size (cm)', 'Stimulus width (cm)', 'Background color', 'Cue color', 'Go color', 'Stop color'),
+                order = ('Send serial trigger at trial onset?', 'Left response key', 'Right response key', 'Left 2 response key', 'Right 2 response key', 'Target time (ms)', 'Trial length (s)', 'Feedback duration (s)', 'Intertrial interval (s)', 'Blank intertrial interval?', 'Fixed delay?', 'Variable delay lower limit (s)', 'Variable delay upper limit (s)', 'Fixed delay length (s)', 'Stop-both time (ms)', 'Stop-left time (ms)', 'Stop-right time (ms)', 'Lower stop-limit (ms)', 'Upper stop-limit (ms)', 'Positional stop signal', 'Target position', 'Stimulus size (cm)', 'Stimulus width (cm)', 'Background color', 'Cue color', 'Go color', 'Stop color'),
                 tip = {
                      'Send serial trigger at trial onset?': 'Select this if you would like to send a trigger at trial onset\n(NOTE: a serial device must be set up for this to work)',
                      'Target time (ms)': 'Input the desired target response time\n(NOTE: keep in mind that trial length needs to be adjusted to allow for complete filling if target time is extended too far)',
                      'Trial length (s)': 'Input desired trial length\n(NOTE FOR ARI: this should be at least the length of total time it takes for both bars to fill)',
+                     'Feedback duration (s)': 'Input the desired time to present trial-by-trial feedback to participant (NOTE: this time will NOT be included if trial-by-trial feedback is disabled)',
                      'Intertrial interval (s)': 'Input the desired intertrial interval (ITI)',
+                     'Blank intertrial interval?': 'If selected, the stimuli will be removed from the screen during the intertrial interval',
                      'Fixed rise delay?': 'If selected, each trial will begin with a fixed rise delay (length below).\nIf unselected, each trial will begin with a variable rise delay (ARI: 500 - 1000 ms, SST: 1000 - 2000 ms).',
                      'Fixed delay length (s)': 'Length of fixed delay (if selected) you would like to use at the start of each trial',
                      'Lower stop-limit (ms)': 'Time relative to trial onset that the bars should not stop before',
@@ -171,10 +175,10 @@ class Experiment():
         print('Frame duration is %s ms' %round(self.frameDur,1))        
 
         # Here you can implement code to operate an external response box. 
-        # The keyboard will be used if no response box is selected.
+        # NOTE: the keyboard will be used if no response box is selected.
         if self.genSettings['Use response box?'] == True:
             # e.g.
-            #self.rb = buttonbox.Buttonbox()    # example buttonbox from RuSocSci
+            #self.rb = buttonbox.Buttonbox()    # example buttonbox from RuSocSci, but can edit to function with your response box
             #self.L_resp_key = 'E'
             #self.R_resp_key = 'A'
             if self.taskInfo['Response mode'] == 'Hold-and-release':
@@ -216,7 +220,7 @@ class Experiment():
 
         # INSTRUCTIONS        
         # Load instructions depending on selected paradigm
-        # Instructions can be modified by replacing the associated .png for each instruction (see SeleST_intrusctions.ppt for instruction slides)
+        # NOTE: instructions can be modified by replacing the associated .png for each instruction (see SeleST_instructions.ppt for instruction slides)
         if self.taskInfo['Paradigm'] == 'ARI' and self.taskInfo['RT type'] == 'Simple':
             instrDir = _thisDir+'/instructions/ARI_simple/'
         if self.taskInfo['Paradigm'] == 'SST' and self.taskInfo['RT type'] == 'Simple':
@@ -244,7 +248,7 @@ class Experiment():
 class Stimuli:
     def __init__(self, exp):
         TargetPos = (exp.advSettings['Target position']*exp.advSettings['Stimulus size (cm)'])-exp.advSettings['Stimulus size (cm)']/2 # set position for target lines (ARI only)
-        TargetLineWidth = 5.5 # Set width of target lines (ARI only)
+        TargetLineWidth = 5.5 # set width of target lines (ARI only)
         self.L_emptyStim = visual.Rect(exp.win, fillColor='white', lineWidth = 5, lineColor=None, opacity=1, units='cm', size=[exp.advSettings['Stimulus width (cm)'],exp.advSettings['Stimulus size (cm)']],pos=[-(exp.advSettings['Stimulus width (cm)']),0])
         self.L_stim = visual.Rect(exp.win, fillColor=exp.advSettings['Go color'], lineColor=None, opacity=1, units='cm', size=[exp.advSettings['Stimulus width (cm)'],exp.advSettings['Stimulus size (cm)']],pos=[-(exp.advSettings['Stimulus width (cm)']),0])        
         self.R_emptyStim = visual.Rect(exp.win, fillColor='white', lineWidth = 5, lineColor=None, opacity=1, units='cm', size=[exp.advSettings['Stimulus width (cm)'],exp.advSettings['Stimulus size (cm)']],pos=[(exp.advSettings['Stimulus width (cm)']),0])
