@@ -32,8 +32,14 @@ An overview and recommendations for use of SeleST is provided in the following o
 
 ![SeleST_defaults](/instructions/SeleST_choiceTrialTypes.png)
 
-- Remember to always check stimulus and response timing with your own set up!
+- Remember to always check stimulus and response timings with your own set up!
 
 ### Status updates
 
-- SeleST article is now freely available in *Experimental Brain Research*. The repository will be updated based on community feedback.
+Last updated 23-Feb-2024, made adjustments such as:
+- Confirmed SeleST functions with PsychoPy v2023.2.3
+- Added option to use a blank intertrial interval
+- Added separate feedback and intertrial intervals that can be adjusted independently
+- Adjusted default SSD values for the ARI (550 ms) and SST (175 ms) based on findings from Exp Brain Res SeleST study
+- Made the force quitting more reliable during fixation period and trial (still need to get it working with end block)
+- Tidied up language and comments throughout the scripts
