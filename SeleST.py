@@ -2,8 +2,9 @@
 Selective Stopping Toolbox (SeleST)
     Written by Corey Wadsley*,** with help from Fenwick Nolan
         *Movement Neuroscience Laboratory, Department of Exercise Sciences, The University of Auckland
-        **Action Control Laboratory, Department of Human Physiology, The University of Auckland
+        **Action Control Laboratory, Department of Human Physiology, University of Oregon
     
+    Last updated: 23-Feb-2024
     Further information can be found at:
         https://github.com/coreywadsley/SeleST
     
@@ -24,7 +25,7 @@ from lib import SeleST_initialize, SeleST_run
 _thisDir = os.path.dirname(os.path.abspath(__file__)) 
 os.chdir(_thisDir)
 
-#   INITIALIZE
+#   ---SeleST_initialize---
 # Here we are initializing all of the information that can change across sessions 
     # additional info for each class can be found in the SeleST_initialize script
 exp = SeleST_initialize.Experiment(_thisDir) # exp class
@@ -32,7 +33,7 @@ stimuli = SeleST_initialize.Stimuli(exp) # stimuli class
 trialInfo = SeleST_initialize.Trials(exp) # trialInfo class
 stopInfo = SeleST_initialize.SSD(exp) # stopInfo class
 
-#   RUN
+#   ---SeleST_run---
 # Here we are running the task by looping over blocks and trials
     # additional info for each function can be found in the SeleST_run script
 for thisBlock in trialInfo.blockList: # iterate over blocks
@@ -43,7 +44,7 @@ for thisBlock in trialInfo.blockList: # iterate over blocks
         print('Trial number %s'%(trialInfo.trialCount) + ' - ' + thisTrial.trialName) # print trial number & name to console
         trialStimuli = SeleST_run.Start_Trial(exp,stimuli,trialInfo,thisTrial,trial) # set additional trial related parameters
         exp.win.flip() # draw stimuli at start of trial
-        fixPeriod = SeleST_run.fixationPeriod(exp,stimuli) # run fixation period
+        fixPeriod = SeleST_run.fixationPeriod(exp,stimuli,trialStimuli) # run fixation period
         if exp.taskInfo['Response mode'] == 'Wait-and-press': # clear events in buffer if wait-and-press version
             exp.rb.clearEvents()
         startTime = round(exp.globalClock.getTime(),1) # record trial start time and print it to the console
@@ -60,7 +61,6 @@ for thisBlock in trialInfo.blockList: # iterate over blocks
         SeleST_run.feedback(exp, stimuli, trialInfo, thisTrial, trialStimuli) # calculate response accuracy and present feedback
         SeleST_run.staircaseSSD(exp, stopInfo, thisTrial) # staircase SSD if applicable
         SeleST_run.saveData(exp, trialInfo, thisTrial, startTime) # save data from current trial
-        SeleST_run.ITI(exp) # run intertrial interval
-        SeleST_run.endTrial(exp,stimuli, trialStimuli) # remove stimuli from screen
+        SeleST_run.ITI(exp, stimuli, trialStimuli) # end trial and run the intertrial interval
     SeleST_run.endBlock(exp, trialInfo, thisBlockTrials) # calculate block score and present end-of-block feedback
 SeleST_run.endTask(exp, stimuli, trialStimuli) # end the task when all blocks have been completed
