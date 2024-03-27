@@ -195,7 +195,7 @@ class Experiment():
         if self.advSettings['Send serial trigger at trial onset?'] == True:    
             # e.g.
             #self.ser = serial.Serial('COM8', 9600, timeout=0)
-            #line = ser.readline()
+            #line = self.ser.readline()
             pass
 
         # Create clocks to monitor trial duration and trial times
