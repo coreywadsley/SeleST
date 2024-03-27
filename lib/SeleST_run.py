@@ -455,11 +455,11 @@ def endTask(exp, stimuli, trialStimuli):
     # Close window, serial ports etc. at the end of the experiment
     if exp.advSettings['Send serial trigger at trial onset?'] == True:
         # E.g.
-        #ser.close()
+        #exp.ser.close()
         pass
     if exp.genSettings['Use response box?'] == True:
         # E.g.
-        #rb.close()   
+        #exp.rb.close()   
         pass                                   
     exp.win.close()
     core.quit()
