@@ -255,7 +255,6 @@ def runTrial(exp,stimuli,thisTrial,trialStimuli,trialTimer):
 # Define stop_signal function
 #   Function for presenting stop signal when stop timer reaches 0
 def stop_signal(exp,stimuli,thisTrial,trialStimuli):
-
     if thisTrial.stopSignal == True:
         # Visual stop signal (colour of stimuli)
         if exp.advSettings['Positional stop signal'] == False:      
@@ -360,18 +359,22 @@ def feedback(exp,stimuli,trialInfo,thisTrial,trialStimuli):
     if trialInfo.blockCount > 0:
         trialInfo.blockScore = trialInfo.blockScore + trialScore # updated block score
 
+    if thisTrial.trialType == 2 and any(thisTrial.pressState): # make sure stop is flagged as unsuccessful if either key is pressed during trial
+        thisTrial.stopSuccess = 0
+
 # Define staircaseSSD function
 #   Function for adjusting SSD based on stop success
 def staircaseSSD(exp,stopInfo,thisTrial): 
-    print('Stop time was %s'%(thisTrial.stopTime)) # print stop time of current trial to console
     if exp.genSettings['Staircase stop-signal delays?'] == True: # only staircase if option is enabled
         if thisTrial.trialType > 1: # if stop trial
-                if thisTrial.stopSuccess == 1: # if successful stop trial
-                    if not stopInfo.stopTimeArray[thisTrial.staircase] + stopInfo.strcaseTime > (thisTrial.L_targetTime - exp.advSettings['Upper stop-limit (ms)']):
-                        stopInfo.stopTimeArray[thisTrial.staircase] = stopInfo.stopTimeArray[thisTrial.staircase] + stopInfo.strcaseTime
-                elif thisTrial.stopSuccess == 0: # if unsuccessful stop trial
-                    if not stopInfo.stopTimeArray[thisTrial.staircase] - stopInfo.strcaseTime < exp.advSettings['Lower stop-limit (ms)']:
-                        stopInfo.stopTimeArray[thisTrial.staircase] = stopInfo.stopTimeArray[thisTrial.staircase] - stopInfo.strcaseTime
+            outcome = 'successful' if thisTrial.stopSuccess else 'unsuccessful'
+            print(f'Stop time was {thisTrial.stopTime} and was {outcome}') # print stop time and outcome of current trial to console
+            if thisTrial.stopSuccess == 1: # if successful stop trial
+                if not stopInfo.stopTimeArray[thisTrial.staircase] + stopInfo.strcaseTime > (thisTrial.L_targetTime - exp.advSettings['Upper stop-limit (ms)']):
+                    stopInfo.stopTimeArray[thisTrial.staircase] = stopInfo.stopTimeArray[thisTrial.staircase] + stopInfo.strcaseTime
+            elif thisTrial.stopSuccess == 0: # if unsuccessful stop trial
+                if not stopInfo.stopTimeArray[thisTrial.staircase] - stopInfo.strcaseTime < exp.advSettings['Lower stop-limit (ms)']:
+                    stopInfo.stopTimeArray[thisTrial.staircase] = stopInfo.stopTimeArray[thisTrial.staircase] - stopInfo.strcaseTime
                     
 # Define saveData function
 #   Function for saving data after each trial
